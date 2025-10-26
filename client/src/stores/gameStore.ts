@@ -172,8 +172,24 @@ export const useGameStore = create<GameStore>()(
       },
       
       mortgageStock: (playerId: string, cargoType: string, quantity: number) => {
-        // 抵押股票逻辑
-        return { success: true };
+        const { engine } = get();
+        const gameState = engine.getGameState();
+        if (!gameState) {
+          return { success: false, error: 'Game not started' };
+        }
+        
+        const action: GameAction = {
+          type: 'MORTGAGE_STOCK',
+          playerId,
+          data: { cargoType, quantity },
+          timestamp: Date.now()
+        };
+        
+        const result = engine.processAction(action);
+        if (result.success && result.newState) {
+          set({ gameState: result.newState });
+        }
+        return result;
       },
       
       selectInvestment: (playerId: string, slotId: string) => {

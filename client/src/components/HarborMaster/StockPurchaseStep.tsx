@@ -13,6 +13,8 @@ export const StockPurchaseStep: React.FC = () => {
   
   if (!gameState) return null;
 
+  const currentPlayer = gameState.players.find(p => p.id === gameState.harborMaster?.playerId);
+  
   const getCargoName = (cargo: CargoType): string => {
     const names = {
       'JADE': '翡翠',
@@ -40,6 +42,11 @@ export const StockPurchaseStep: React.FC = () => {
         <p className="text-sm text-gray-600">
           您可以按 max(5, 当前股价) 购买一股货物
         </p>
+        {currentPlayer && (
+          <p className="text-sm text-blue-600 font-medium">
+            当前现金: {currentPlayer.cash}
+          </p>
+        )}
       </div>
       
       <div className="grid grid-cols-2 gap-4">
@@ -125,6 +132,7 @@ export const StockPurchaseStep: React.FC = () => {
             setShowMortgageModal(false);
             setMortgageSuccess(true);
             // 不自动购买股票，让用户重新点击购买按钮
+            console.log('抵押成功，现金已更新');
           } else {
             alert(result.error || '抵押失败');
           }
