@@ -112,12 +112,14 @@ export const StockPurchaseStep: React.FC = () => {
           const result = mortgageStock(gameState.harborMaster?.playerId || '', cargoType, quantity);
           if (result.success) {
             // 抵押成功后，再次尝试购买股票
-            const buyResult = buyHarborMasterStock(selectedCargo!);
-            if (buyResult.success) {
-              setHasPurchased(true);
-            } else {
-              alert(buyResult.error || '购买失败');
-            }
+            setTimeout(() => {
+              const buyResult = buyHarborMasterStock(selectedCargo!);
+              if (buyResult.success) {
+                setHasPurchased(true);
+              } else {
+                alert(buyResult.error || '购买失败');
+              }
+            }, 100); // 给状态更新一点时间
           } else {
             alert(result.error || '抵押失败');
           }

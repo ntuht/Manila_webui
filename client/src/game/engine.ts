@@ -294,13 +294,21 @@ export class GameEngine {
     const player = state.players.find(p => p.id === action.playerId);
     if (!player) return state;
 
-    const cargoType = action.data.cargoType;
-    const stock = player.stocks.find(s => s.cargoType === cargoType);
+    const cargoType = action.data.cargoType as CargoType;
+    const quantity = action.data.quantity as number;
     
-    if (stock && stock.quantity > 0) {
-      stock.quantity--;
-      stock.isMortgaged = true;
-      player.cash += 12; // 抵押获得12现金
+    const stock = player.stocks.find(s => s.cargoType === cargoType);
+    if (stock && stock.quantity >= quantity) {
+      // 减少股票数量
+      stock.quantity -= quantity;
+      
+      // 如果股票数量为0，标记为已抵押
+      if (stock.quantity === 0) {
+        stock.isMortgaged = true;
+      }
+      
+      // 增加现金
+      player.cash += quantity * 12; // 每抵押一股获得12现金
     }
     
     return state;

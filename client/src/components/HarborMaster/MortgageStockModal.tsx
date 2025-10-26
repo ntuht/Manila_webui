@@ -55,7 +55,7 @@ export const MortgageStockModal: React.FC<MortgageStockModalProps> = ({
   const mortgageValue = quantity * 12; // 每抵押一股获得12现金
   
   const handleConfirm = () => {
-    if (selectedCargo && quantity > 0) {
+    if (selectedCargo && quantity > 0 && quantity <= maxQuantity) {
       onConfirm(selectedCargo, quantity);
       onClose();
     }
@@ -84,7 +84,10 @@ export const MortgageStockModal: React.FC<MortgageStockModalProps> = ({
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
-                onClick={() => setSelectedCargo(stock.cargoType)}
+                onClick={() => {
+                  setSelectedCargo(stock.cargoType);
+                  setQuantity(1); // 重置数量为1
+                }}
               >
                 <div className="flex items-center space-x-2">
                   <div className={`w-4 h-4 rounded-full ${getCargoColor(stock.cargoType)}`}></div>
@@ -138,7 +141,7 @@ export const MortgageStockModal: React.FC<MortgageStockModalProps> = ({
         <div className="flex space-x-3">
           <Button
             onClick={handleConfirm}
-            disabled={!selectedCargo || quantity <= 0}
+            disabled={!selectedCargo || quantity <= 0 || quantity > maxQuantity}
             className="flex-1"
           >
             确认抵押
