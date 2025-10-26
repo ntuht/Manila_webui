@@ -193,18 +193,56 @@ export const useGameStore = create<GameStore>()(
       },
       
       selectInvestment: (playerId: string, slotId: string) => {
-        // 选择投资逻辑
-        return { success: true };
+        const { engine } = get();
+        const action: GameAction = {
+          type: 'SELECT_INVESTMENT',
+          playerId,
+          data: { slotId },
+          timestamp: Date.now()
+        };
+        
+        const result = engine.processAction(action);
+        if (result.success && result.newState) {
+          set({ gameState: result.newState });
+        }
+        return result;
       },
       
       useNavigator: (playerId: string, action: string) => {
-        // 使用领航员逻辑
-        return { success: true };
+        const { engine } = get();
+        const gameAction: GameAction = {
+          type: 'USE_NAVIGATOR',
+          playerId,
+          data: { action },
+          timestamp: Date.now()
+        };
+        
+        const result = engine.processAction(gameAction);
+        if (result.success && result.newState) {
+          set({ gameState: result.newState });
+        }
+        return result;
       },
       
       rollDice: () => {
-        // 投掷骰子逻辑
-        return { success: true };
+        const { engine, gameState } = get();
+        if (!gameState) {
+          return { success: false, error: 'Game not started' };
+        }
+        
+        const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+        const action: GameAction = {
+          type: 'ROLL_DICE',
+          playerId: currentPlayer.id,
+          data: {},
+          timestamp: Date.now()
+        };
+        
+        const result = engine.processAction(action);
+        if (result.success && result.newState) {
+          set({ gameState: result.newState });
+        }
+        return result;
       },
       
       // 查询

@@ -323,8 +323,36 @@ export class GameEngine {
     return state;
   }
 
-  private processSelectInvestment(state: GameState, _action: GameAction): GameState {
-    // 投资选择逻辑
+  private processSelectInvestment(state: GameState, action: GameAction): GameState {
+    const player = state.players.find(p => p.id === action.playerId);
+    if (!player) return state;
+
+    const slotId = action.data.slotId as string;
+    
+    // 投资成本映射
+    const investmentCosts: Record<string, number> = {
+      'CREW': 3,
+      'HARBOR_OFFICE': 4,
+      'SHIPYARD_OFFICE': 5,
+      'PIRATE': 6,
+      'NAVIGATOR': 7,
+      'INSURANCE': 8
+    };
+    
+    const cost = investmentCosts[slotId];
+    if (cost && player.cash >= cost) {
+      player.cash -= cost;
+      player.investments.push({
+        id: `investment-${Date.now()}`,
+        type: slotId,
+        cost,
+        round: state.round
+      });
+      
+      // 推进投资轮次
+      this.advanceInvestmentRound();
+    }
+    
     return state;
   }
 
@@ -445,7 +473,7 @@ export class GameEngine {
     // 移动船只
     state.ships.forEach(ship => {
       ship.position += dice1 + dice2 + dice3;
-      if (ship.position >= 13) {
+      if (ship.position >= 14) { // 港口在位置14
         ship.isDocked = true;
       }
     });
