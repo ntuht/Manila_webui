@@ -7,7 +7,9 @@ import type {
   ActionResult,
   GamePhase,
   CargoType,
-  StockPrices
+  StockPrices,
+  HarborMasterState,
+  InvestmentRoundState
 } from '../types';
 
 export class GameEngine {
@@ -102,8 +104,8 @@ export class GameEngine {
         cash: 30,
         stocks: this.generateInitialStocks(),
         investments: [],
-        true,
-        i > 0,
+        isActive: true,
+        isAI: i > 0,
         aiStrategy: i > 0 ? config.aiStrategies[i - 1] : undefined
       });
     }
@@ -157,6 +159,10 @@ export class GameEngine {
         return this.processUseNavigator(newState, action);
       case 'ROLL_DICE':
         return this.processRollDice(newState, action);
+      case 'HARBOR_MASTER_SELECT_CARGO':
+        return this.processHarborMasterSelectCargo(newState, action);
+      case 'HARBOR_MASTER_SET_POSITIONS':
+        return this.processHarborMasterSetPositions(newState, action);
       case 'END_PHASE':
         this.nextPhase();
         return newState;
@@ -179,6 +185,15 @@ export class GameEngine {
     
     // 设置港务长
     state.auctionWinner = action.playerId;
+    
+    // 初始化港务长状态
+    state.harborMaster = {
+      playerId: action.playerId,
+      currentStep: 'BUY_STOCK',
+      selectedCargos: [],
+      shipPositions: {},
+      hasCompletedStockPurchase: false
+    };
     
     return state;
   }
@@ -227,6 +242,101 @@ export class GameEngine {
   private processUseNavigator(state: GameState, action: GameAction): GameState {
     // 领航员使用逻辑
     return state;
+  }
+
+  private processHarborMasterSelectCargo(state: GameState, action: GameAction): GameState {
+    const { cargos } = action.data;  // CargoType[] 长度为3
+    
+    if (!state.harborMaster) return state;
+    
+    state.harborMaster.selectedCargos = cargos;
+    
+    // 更新船只货物类型
+    cargos.forEach((cargo, index) => {
+      if (state.ships[index]) {
+        state.ships[index].cargoType = cargo;
+      }
+    });
+    
+    state.harborMaster.currentStep = 'SET_POSITIONS';
+    
+    return state;
+  }
+
+  private processHarborMasterSetPositions(state: GameState, action: GameAction): GameState {
+    const { positions } = action.data;  // Record<CargoType, number>
+    
+    if (!state.harborMaster) return state;
+    
+    // 验证总和为9，每个0-5
+    const total = Object.values(positions).reduce((a, b) => a + b, 0);
+    if (total !== 9) {
+      throw new Error('船只位置总和必须为9');
+    }
+    
+    // 设置船只位置
+    Object.entries(positions).forEach(([cargo, position]) => {
+      const ship = state.ships.find(s => s.cargoType === cargo as CargoType);
+      if (ship) {
+        ship.position = position;
+      }
+    });
+    
+    // 完成港务长阶段，进入投资阶段
+    state.harborMaster = undefined;
+    state.phase = 'INVESTMENT';
+    
+    // 初始化投资轮次
+    this.initializeInvestmentRound(state);
+    
+    return state;
+  }
+
+  private initializeInvestmentRound(state: GameState): void {
+    const playerCount = state.players.length;
+    const totalRounds = playerCount === 3 ? 4 : 3;  // 3人4次，4人3次
+    
+    // 投资顺序：从港务长开始顺时针
+    const harborMasterIndex = state.players.findIndex(
+      p => p.id === state.auctionWinner
+    );
+    
+    const order: string[] = [];
+    for (let i = 0; i < playerCount; i++) {
+      const index = (harborMasterIndex + i) % playerCount;
+      order.push(state.players[index].id);
+    }
+    
+    state.investmentRound = {
+      currentRound: 1,
+      totalRounds,
+      currentPlayerIndex: 0,
+      investmentOrder: order
+    };
+  }
+
+  public advanceInvestmentRound(): void {
+    if (!this.state?.investmentRound) return;
+    
+    const { currentPlayerIndex, investmentOrder, currentRound, totalRounds } = this.state.investmentRound;
+    
+    // 移动到下一个玩家
+    const nextPlayerIndex = currentPlayerIndex + 1;
+    
+    if (nextPlayerIndex >= investmentOrder.length) {
+      // 一轮投资完成
+      if (currentRound < totalRounds) {
+        // 进入下一轮
+        this.state.investmentRound.currentRound++;
+        this.state.investmentRound.currentPlayerIndex = 0;
+      } else {
+        // 所有投资轮次完成，进入航行阶段
+        this.state.phase = 'SAILING';
+        this.state.investmentRound = undefined;
+      }
+    } else {
+      this.state.investmentRound.currentPlayerIndex = nextPlayerIndex;
+    }
   }
 
   private processRollDice(state: GameState, action: GameAction): GameState {

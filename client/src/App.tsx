@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+// 移除未使用的导入
 import { useGameStore } from './stores';
 import { GameLayout, GameInterface } from './components/Game';
 import { Lobby } from './components/Lobby/Lobby';

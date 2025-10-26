@@ -22,14 +22,13 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   };
 
   return (
-    <Card
-      className={`cursor-pointer transition-all ${
+    <div
+      className={`card cursor-pointer transition-all ${
         isCurrentPlayer ? 'ring-2 ring-blue-500 bg-blue-50' : ''
       } ${!isActive ? 'opacity-60' : 'hover:shadow-md'} ${
         onSelect ? 'hover:scale-105' : ''
       }`}
       onClick={onSelect ? handleClick : undefined}
-      padding="sm"
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
@@ -104,6 +103,6 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
           暂无股票和投资
         </div>
       )}
-    </Card>
+    </div>
   );
 };

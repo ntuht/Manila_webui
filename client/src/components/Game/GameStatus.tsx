@@ -14,7 +14,7 @@ export const GameStatus: React.FC = () => {
   }
 
   const getPhaseStatus = (phase: string) => {
-    const statuses = {
+    const statuses: Record<string, { text: string; color: string; bg: string }> = {
       'AUCTION': { text: '拍卖阶段', color: 'text-blue-600', bg: 'bg-blue-100' },
       'INVESTMENT': { text: '投资阶段', color: 'text-green-600', bg: 'bg-green-100' },
       'SAILING': { text: '航行阶段', color: 'text-purple-600', bg: 'bg-purple-100' },

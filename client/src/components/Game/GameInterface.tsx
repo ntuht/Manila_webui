@@ -3,31 +3,42 @@ import { useGameStore } from '../../stores';
 import { PlayerList } from '../Player';
 import { GameBoard } from '../Board';
 import { GameStatus, ActionPanel, GameLog } from './';
+import { HarborMasterWizard } from '../HarborMaster';
+import { InvestmentRoundIndicator } from '../Investment';
 
 export const GameInterface: React.FC = () => {
-  const { currentPhase } = useGameStore();
+  const { gameState } = useGameStore();
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      {/* 左侧：玩家信息 */}
-      <div className="lg:col-span-1">
-        <div className="space-y-4">
-          <PlayerList />
-          <StockPrices />
+    <div className="space-y-6">
+      {/* 港务长向导 */}
+      {gameState?.harborMaster && <HarborMasterWizard />}
+      
+      {/* 投资轮次指示器 */}
+      {gameState?.investmentRound && <InvestmentRoundIndicator />}
+      
+      {/* 主游戏界面 */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* 左侧：玩家信息 */}
+        <div className="lg:col-span-1">
+          <div className="space-y-4">
+            <PlayerList />
+            <StockPrices />
+          </div>
         </div>
-      </div>
-      
-      {/* 中间：游戏棋盘 */}
-      <div className="lg:col-span-2">
-        <GameBoard />
-      </div>
-      
-      {/* 右侧：游戏信息 */}
-      <div className="lg:col-span-1">
-        <div className="space-y-4">
-          <GameStatus />
-          <ActionPanel />
-          <GameLog />
+        
+        {/* 中间：游戏棋盘 */}
+        <div className="lg:col-span-2">
+          <GameBoard />
+        </div>
+        
+        {/* 右侧：游戏信息 */}
+        <div className="lg:col-span-1">
+          <div className="space-y-4">
+            <GameStatus />
+            <ActionPanel />
+            <GameLog />
+          </div>
         </div>
       </div>
     </div>

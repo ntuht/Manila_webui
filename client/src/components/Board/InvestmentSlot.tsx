@@ -22,7 +22,7 @@ export const InvestmentSlot: React.FC<InvestmentSlotProps> = ({
   onSelect
 }) => {
   const getSlotColor = (type: string): string => {
-    const colors = {
+    const colors: Record<string, string> = {
       'CREW': 'border-blue-300 bg-blue-50',
       'HARBOR_OFFICE': 'border-green-300 bg-green-50',
       'SHIPYARD_OFFICE': 'border-orange-300 bg-orange-50',
@@ -34,7 +34,7 @@ export const InvestmentSlot: React.FC<InvestmentSlotProps> = ({
   };
 
   const getSlotIcon = (type: string): string => {
-    const icons = {
+    const icons: Record<string, string> = {
       'CREW': '👥',
       'HARBOR_OFFICE': '🏢',
       'SHIPYARD_OFFICE': '🔧',

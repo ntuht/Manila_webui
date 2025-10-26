@@ -34,6 +34,12 @@ interface GameStore {
   useNavigator: (playerId: string, action: string) => ActionResult;
   rollDice: () => ActionResult;
   
+  // 港务长操作
+  buyHarborMasterStock: (cargoType: string) => ActionResult;
+  skipStockPurchase: () => void;
+  selectCargos: (cargos: string[]) => ActionResult;
+  setShipPositions: (positions: Record<string, number>) => ActionResult;
+  
   // 查询
   getValidActions: (playerId: string) => GameAction[];
   getPlayerState: (playerId: string) => PlayerState | undefined;
@@ -239,6 +245,79 @@ export const useGameStore = create<GameStore>()(
       getGameHistory: () => {
         const { gameState } = get();
         return gameState?.history || [];
+      },
+      
+      // 港务长操作
+      buyHarborMasterStock: (cargoType: string) => {
+        const { engine } = get();
+        const gameState = engine.getGameState();
+        if (!gameState?.harborMaster) {
+          return { success: false, error: 'No harbor master session' };
+        }
+        
+        const action: GameAction = {
+          type: 'BUY_STOCK',
+          playerId: gameState.harborMaster.playerId,
+          data: { cargoType },
+          timestamp: Date.now()
+        };
+        
+        const result = engine.processAction(action);
+        if (result.success && result.newState) {
+          set({ gameState: result.newState });
+        }
+        return result;
+      },
+
+      skipStockPurchase: () => {
+        const state = get().gameState;
+        if (state?.harborMaster) {
+          state.harborMaster.hasCompletedStockPurchase = true;
+          state.harborMaster.currentStep = 'SELECT_CARGO';
+          set({ gameState: { ...state } });
+        }
+      },
+
+      selectCargos: (cargos: string[]) => {
+        const { engine } = get();
+        const gameState = engine.getGameState();
+        if (!gameState?.harborMaster) {
+          return { success: false, error: 'No harbor master session' };
+        }
+        
+        const action: GameAction = {
+          type: 'HARBOR_MASTER_SELECT_CARGO',
+          playerId: gameState.harborMaster.playerId,
+          data: { cargos },
+          timestamp: Date.now()
+        };
+        
+        const result = engine.processAction(action);
+        if (result.success && result.newState) {
+          set({ gameState: result.newState });
+        }
+        return result;
+      },
+
+      setShipPositions: (positions: Record<string, number>) => {
+        const { engine } = get();
+        const gameState = engine.getGameState();
+        if (!gameState?.harborMaster) {
+          return { success: false, error: 'No harbor master session' };
+        }
+        
+        const action: GameAction = {
+          type: 'HARBOR_MASTER_SET_POSITIONS',
+          playerId: gameState.harborMaster.playerId,
+          data: { positions },
+          timestamp: Date.now()
+        };
+        
+        const result = engine.processAction(action);
+        if (result.success && result.newState) {
+          set({ gameState: result.newState, currentPhase: 'INVESTMENT' });
+        }
+        return result;
       },
       
       // 工具

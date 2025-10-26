@@ -6,11 +6,19 @@ export type CargoType = 'JADE' | 'SILK' | 'GINSENG' | 'NUTMEG';
 // 游戏阶段
 export type GamePhase = 'LOBBY' | 'AUCTION' | 'INVESTMENT' | 'SAILING' | 'SETTLEMENT' | 'GAME_END';
 
+// 港务长阶段
+export type HarborMasterPhase = 
+  | 'BUY_STOCK'           // 购买股票
+  | 'SELECT_CARGO'        // 选择货物
+  | 'SET_POSITIONS';      // 设置船只位置
+
 // 动作类型
 export type ActionType = 
   | 'BID' 
   | 'BUY_STOCK' 
   | 'MORTGAGE_STOCK' 
+  | 'HARBOR_MASTER_SELECT_CARGO'     // 港务长选择货物
+  | 'HARBOR_MASTER_SET_POSITIONS'    // 港务长设置位置
   | 'SELECT_INVESTMENT' 
   | 'USE_NAVIGATOR' 
   | 'ROLL_DICE'
@@ -24,6 +32,23 @@ export type InvestmentSlotType =
   | 'PIRATE' 
   | 'NAVIGATOR' 
   | 'INSURANCE';
+
+// 港务长状态
+export interface HarborMasterState {
+  playerId: string;
+  currentStep: HarborMasterPhase;
+  selectedCargos: CargoType[];     // 已选择的货物（最多3种）
+  shipPositions: Record<CargoType, number>;  // 船只初始位置
+  hasCompletedStockPurchase: boolean;
+}
+
+// 投资轮次状态
+export interface InvestmentRoundState {
+  currentRound: number;          // 当前轮次 (1-3 或 1-4)
+  totalRounds: number;           // 总轮次数
+  currentPlayerIndex: number;    // 当前投资玩家索引
+  investmentOrder: string[];     // 投资顺序（玩家ID列表）
+}
 
 // 领航员动作类型
 export type NavigatorActionType = 'SMALL_NAVIGATOR' | 'BIG_NAVIGATOR';
@@ -90,6 +115,8 @@ export interface GameState {
   currentPlayerIndex: number;
   auctionWinner?: string;
   diceResults?: DiceResult[];
+  harborMaster?: HarborMasterState;
+  investmentRound?: InvestmentRoundState;
 }
 
 // 股票价格
