@@ -5,6 +5,9 @@ import { GameBoard } from '../Board';
 import { GameStatus, ActionPanel, GameLog } from './';
 import { HarborMasterWizard } from '../HarborMaster';
 import { InvestmentRoundIndicator } from '../Investment';
+import { AuctionPhase, BidHistory } from '../Auction';
+import { InvestmentPhase, InvestmentHistory } from '../InvestmentPhase';
+import { SailingPhase, DiceResults } from '../SailingPhase';
 
 export const GameInterface: React.FC = () => {
   const { gameState } = useGameStore();
@@ -16,6 +19,42 @@ export const GameInterface: React.FC = () => {
       
       {/* 投资轮次指示器 */}
       {gameState?.investmentRound && <InvestmentRoundIndicator />}
+      
+      {/* 拍卖阶段 */}
+      {gameState?.phase === 'AUCTION' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <AuctionPhase />
+          </div>
+          <div className="lg:col-span-1">
+            <BidHistory />
+          </div>
+        </div>
+      )}
+      
+      {/* 投资阶段 */}
+      {gameState?.phase === 'INVESTMENT' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <InvestmentPhase />
+          </div>
+          <div className="lg:col-span-1">
+            <InvestmentHistory />
+          </div>
+        </div>
+      )}
+      
+      {/* 航行阶段 */}
+      {gameState?.phase === 'SAILING' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <SailingPhase />
+          </div>
+          <div className="lg:col-span-1">
+            {gameState.diceResults && <DiceResults diceResults={gameState.diceResults} />}
+          </div>
+        </div>
+      )}
       
       {/* 主游戏界面 */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
