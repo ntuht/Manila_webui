@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../../stores';
 import { Button } from '../Shared/Button';
+import { MortgageStockModal } from './MortgageStockModal';
 import type { CargoType } from '../../types';
 
 export const StockPurchaseStep: React.FC = () => {
-  const { gameState, buyHarborMasterStock, skipStockPurchase } = useGameStore();
+  const { gameState, buyHarborMasterStock, skipStockPurchase, mortgageStock } = useGameStore();
   const [selectedCargo, setSelectedCargo] = useState<CargoType | null>(null);
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [showMortgageModal, setShowMortgageModal] = useState(false);
   
   if (!gameState) return null;
 
@@ -67,18 +70,59 @@ export const StockPurchaseStep: React.FC = () => {
       
       <div className="flex space-x-3">
         <Button 
-          onClick={() => selectedCargo && buyHarborMasterStock(selectedCargo)}
-          disabled={!selectedCargo}
+          onClick={() => {
+            if (selectedCargo) {
+              const result = buyHarborMasterStock(selectedCargo);
+              if (result.success) {
+                setHasPurchased(true);
+              } else {
+                // 如果现金不足，显示抵押选项
+                if (result.error?.includes('Insufficient funds') || result.error?.includes('资金不足')) {
+                  setShowMortgageModal(true);
+                } else {
+                  alert(result.error || '购买失败');
+                }
+              }
+            }
+          }}
+          disabled={!selectedCargo || hasPurchased}
         >
-          购买股票
+          {hasPurchased ? '已购买' : '购买股票'}
         </Button>
         <Button 
           variant="secondary" 
           onClick={skipStockPurchase}
+          disabled={hasPurchased}
         >
           跳过
         </Button>
       </div>
+      
+      {hasPurchased && (
+        <div className="text-sm text-green-600 bg-green-50 p-3 rounded-lg">
+          ✓ 股票购买成功！已自动进入下一步
+        </div>
+      )}
+      
+      {/* 抵押股票模态框 */}
+      <MortgageStockModal
+        isOpen={showMortgageModal}
+        onClose={() => setShowMortgageModal(false)}
+        onConfirm={(cargoType, quantity) => {
+          const result = mortgageStock(gameState.harborMaster?.playerId || '', cargoType, quantity);
+          if (result.success) {
+            // 抵押成功后，再次尝试购买股票
+            const buyResult = buyHarborMasterStock(selectedCargo!);
+            if (buyResult.success) {
+              setHasPurchased(true);
+            } else {
+              alert(buyResult.error || '购买失败');
+            }
+          } else {
+            alert(result.error || '抵押失败');
+          }
+        }}
+      />
     </div>
   );
 };

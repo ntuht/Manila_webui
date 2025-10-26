@@ -4,3 +4,4 @@ export { StepIndicator } from './StepIndicator';
 export { StockPurchaseStep } from './StockPurchaseStep';
 export { CargoSelectionStep } from './CargoSelectionStep';
 export { PositionSettingStep } from './PositionSettingStep';
+export { MortgageStockModal } from './MortgageStockModal';

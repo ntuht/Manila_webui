@@ -191,7 +191,12 @@ export class GameEngine {
       playerId: action.playerId,
       currentStep: 'BUY_STOCK',
       selectedCargos: [],
-      shipPositions: {},
+      shipPositions: {
+        JADE: 0,
+        SILK: 0,
+        GINSENG: 0,
+        NUTMEG: 0
+      },
       hasCompletedStockPurchase: false
     };
     
@@ -205,6 +210,9 @@ export class GameEngine {
     const cargoType = action.data.cargoType;
     const cost = Math.max(5, state.stockPrices[cargoType]);
     
+    // 检查是否为港务长购买股票
+    const isHarborMaster = state.harborMaster?.playerId === action.playerId;
+    
     if (player.cash >= cost) {
       player.cash -= cost;
       const existingStock = player.stocks.find(s => s.cargoType === cargoType);
@@ -213,9 +221,73 @@ export class GameEngine {
       } else {
         player.stocks.push({ cargoType, quantity: 1, isMortgaged: false });
       }
+      
+      // 如果是港务长购买股票，标记为已完成
+      if (isHarborMaster && state.harborMaster) {
+        state.harborMaster.hasCompletedStockPurchase = true;
+        state.harborMaster.currentStep = 'SELECT_CARGO';
+      }
+    } else {
+      // 现金不足，尝试抵押股票
+      const mortgageResult = this.tryMortgageStocks(player, cost - player.cash);
+      if (mortgageResult.success) {
+        player.cash = 0; // 使用所有现金
+        player.cash += mortgageResult.cashFromMortgage;
+        player.cash -= cost; // 扣除购买成本
+        
+        const existingStock = player.stocks.find(s => s.cargoType === cargoType);
+        if (existingStock) {
+          existingStock.quantity++;
+        } else {
+          player.stocks.push({ cargoType, quantity: 1, isMortgaged: false });
+        }
+        
+        // 如果是港务长购买股票，标记为已完成
+        if (isHarborMaster && state.harborMaster) {
+          state.harborMaster.hasCompletedStockPurchase = true;
+          state.harborMaster.currentStep = 'SELECT_CARGO';
+        }
+      }
     }
     
     return state;
+  }
+
+  private tryMortgageStocks(player: PlayerState, neededCash: number): { success: boolean; cashFromMortgage: number } {
+    let totalCashFromMortgage = 0;
+    const stocksToMortgage: { stock: any; quantity: number }[] = [];
+    let remainingNeededCash = neededCash;
+    
+    // 计算需要抵押多少股票
+    for (const stock of player.stocks) {
+      if (stock.quantity > 0 && !stock.isMortgaged && remainingNeededCash > 0) {
+        const availableQuantity = stock.quantity;
+        const neededQuantity = Math.ceil(remainingNeededCash / 12); // 每抵押一股获得12现金
+        
+        if (neededQuantity <= availableQuantity) {
+          stocksToMortgage.push({ stock, quantity: neededQuantity });
+          totalCashFromMortgage += neededQuantity * 12;
+          remainingNeededCash -= neededQuantity * 12;
+          break;
+        } else {
+          stocksToMortgage.push({ stock, quantity: availableQuantity });
+          totalCashFromMortgage += availableQuantity * 12;
+          remainingNeededCash -= availableQuantity * 12;
+        }
+      }
+    }
+    
+    if (totalCashFromMortgage >= neededCash) {
+      // 执行抵押
+      stocksToMortgage.forEach(({ stock, quantity }) => {
+        stock.quantity -= quantity;
+        stock.isMortgaged = true;
+      });
+      
+      return { success: true, cashFromMortgage: totalCashFromMortgage };
+    }
+    
+    return { success: false, cashFromMortgage: 0 };
   }
 
   private processMortgageStock(state: GameState, action: GameAction): GameState {
@@ -234,12 +306,12 @@ export class GameEngine {
     return state;
   }
 
-  private processSelectInvestment(state: GameState, action: GameAction): GameState {
+  private processSelectInvestment(state: GameState, _action: GameAction): GameState {
     // 投资选择逻辑
     return state;
   }
 
-  private processUseNavigator(state: GameState, action: GameAction): GameState {
+  private processUseNavigator(state: GameState, _action: GameAction): GameState {
     // 领航员使用逻辑
     return state;
   }
@@ -252,7 +324,7 @@ export class GameEngine {
     state.harborMaster.selectedCargos = cargos;
     
     // 更新船只货物类型
-    cargos.forEach((cargo, index) => {
+    cargos.forEach((cargo: CargoType, index: number) => {
       if (state.ships[index]) {
         state.ships[index].cargoType = cargo;
       }
@@ -269,7 +341,7 @@ export class GameEngine {
     if (!state.harborMaster) return state;
     
     // 验证总和为9，每个0-5
-    const total = Object.values(positions).reduce((a, b) => a + b, 0);
+    const total = Object.values(positions).reduce((a: number, b: number) => a + b, 0);
     if (total !== 9) {
       throw new Error('船只位置总和必须为9');
     }
@@ -278,7 +350,7 @@ export class GameEngine {
     Object.entries(positions).forEach(([cargo, position]) => {
       const ship = state.ships.find(s => s.cargoType === cargo as CargoType);
       if (ship) {
-        ship.position = position;
+        ship.position = position as number;
       }
     });
     
