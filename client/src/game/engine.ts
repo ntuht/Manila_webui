@@ -48,22 +48,28 @@ export class GameEngine {
       return { success: false, error: validation.error };
     }
 
-    // 执行动作
-    const newState = this.applyAction(this.state, action);
-    this.state = newState;
+    try {
+      // 执行动作
+      const newState = this.applyAction(this.state, action);
+      this.state = newState;
 
-    // 记录历史
-    this.state.history.push({
-      id: `action-${Date.now()}`,
-      timestamp: Date.now(),
-      round: this.state.round,
-      phase: this.state.phase,
-      playerId: action.playerId,
-      action,
-      result: { success: true, newState }
-    });
+      // 记录历史
+      this.state.history.push({
+        id: `action-${Date.now()}`,
+        timestamp: Date.now(),
+        round: this.state.round,
+        phase: this.state.phase,
+        playerId: action.playerId,
+        action,
+        result: { success: true, newState }
+      });
 
-    return { success: true, newState };
+      return { success: true, newState };
+    } catch (error) {
+      // 捕获并返回错误
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return { success: false, error: errorMessage };
+    }
   }
 
   public getGameState(): GameState | null {
@@ -247,6 +253,9 @@ export class GameEngine {
           state.harborMaster.hasCompletedStockPurchase = true;
           state.harborMaster.currentStep = 'SELECT_CARGO';
         }
+      } else {
+        // 抵押失败，抛出错误
+        throw new Error('Insufficient funds to buy stock');
       }
     }
     

@@ -77,7 +77,7 @@ export const StockPurchaseStep: React.FC = () => {
                 setHasPurchased(true);
               } else {
                 // 如果现金不足，显示抵押选项
-                if (result.error?.includes('Insufficient funds') || result.error?.includes('资金不足')) {
+                if (result.error?.includes('Insufficient funds') || result.error?.includes('资金不足') || result.error?.includes('Insufficient funds to buy stock')) {
                   setShowMortgageModal(true);
                 } else {
                   alert(result.error || '购买失败');

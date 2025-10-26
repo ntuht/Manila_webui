@@ -6,7 +6,7 @@ interface ShipTrackProps {
 }
 
 export const ShipTrack: React.FC<ShipTrackProps> = ({ ship }) => {
-  const positions = Array.from({ length: 13 }, (_, i) => i); // 0-12 是轨道位置
+  const positions = Array.from({ length: 14 }, (_, i) => i); // 0-13 是轨道位置
   
   const getCargoColor = (cargoType: CargoType): string => {
     const colors = {
@@ -61,11 +61,11 @@ export const ShipTrack: React.FC<ShipTrackProps> = ({ ship }) => {
             </div>
           ))}
           
-          {/* 港口位置（位置13之后） */}
+          {/* 港口位置（位置14） */}
           <div className="ml-4">
             <div
               className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-medium transition-all ${
-                ship.position >= 13
+                ship.position >= 14
                   ? 'bg-green-400 border-green-600 text-green-900 scale-110'
                   : 'bg-gray-100 border-gray-300 text-gray-600'
               }`}
