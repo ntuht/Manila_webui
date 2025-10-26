@@ -1,8 +1,7 @@
 import React from 'react';
 import { useGameStore } from './stores';
-import { GameLayout } from './components/Game/GameLayout';
+import { GameLayout, GameInterface } from './components/Game';
 import { Lobby } from './components/Lobby/Lobby';
-import { GameInterface } from './components/Game/GameInterface';
 
 function App() {
   const { currentPhase, gameState } = useGameStore();

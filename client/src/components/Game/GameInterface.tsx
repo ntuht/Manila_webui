@@ -1,10 +1,8 @@
 import React from 'react';
 import { useGameStore } from '../../stores';
-import { PlayerList } from '../Player/PlayerList';
-import { GameBoard } from '../Board/GameBoard';
-import { GameStatus } from './GameStatus';
-import { ActionPanel } from './ActionPanel';
-import { GameLog } from './GameLog';
+import { PlayerList } from '../Player';
+import { GameBoard } from '../Board';
+import { GameStatus, ActionPanel, GameLog } from './';
 
 export const GameInterface: React.FC = () => {
   const { currentPhase } = useGameStore();

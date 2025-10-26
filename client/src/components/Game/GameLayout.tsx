@@ -1,4 +1,6 @@
 import React from 'react';
+import { useGameStore } from '../../stores';
+import { Button } from '../Shared/Button';
 
 interface GameLayoutProps {
   children: React.ReactNode;
