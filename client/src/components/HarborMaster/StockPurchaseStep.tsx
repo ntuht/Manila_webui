@@ -9,6 +9,7 @@ export const StockPurchaseStep: React.FC = () => {
   const [selectedCargo, setSelectedCargo] = useState<CargoType | null>(null);
   const [hasPurchased, setHasPurchased] = useState(false);
   const [showMortgageModal, setShowMortgageModal] = useState(false);
+  const [mortgageSuccess, setMortgageSuccess] = useState(false);
   
   if (!gameState) return null;
 
@@ -49,12 +50,15 @@ export const StockPurchaseStep: React.FC = () => {
           return (
             <div
               key={cargo}
-              className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                isSelected
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-              onClick={() => setSelectedCargo(cargo)}
+                className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                  isSelected
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+                onClick={() => {
+                  setSelectedCargo(cargo);
+                  setMortgageSuccess(false); // 清除抵押成功提示
+                }}
             >
               <div className="flex items-center space-x-3">
                 <div className={`w-6 h-6 rounded-full ${getCargoColor(cargo)}`}></div>
@@ -104,6 +108,12 @@ export const StockPurchaseStep: React.FC = () => {
         </div>
       )}
       
+      {mortgageSuccess && (
+        <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
+          ✓ 抵押成功！您现在有更多现金，可以重新尝试购买股票
+        </div>
+      )}
+      
       {/* 抵押股票模态框 */}
       <MortgageStockModal
         isOpen={showMortgageModal}
@@ -111,15 +121,10 @@ export const StockPurchaseStep: React.FC = () => {
         onConfirm={(cargoType, quantity) => {
           const result = mortgageStock(gameState.harborMaster?.playerId || '', cargoType, quantity);
           if (result.success) {
-            // 抵押成功后，再次尝试购买股票
-            setTimeout(() => {
-              const buyResult = buyHarborMasterStock(selectedCargo!);
-              if (buyResult.success) {
-                setHasPurchased(true);
-              } else {
-                alert(buyResult.error || '购买失败');
-              }
-            }, 100); // 给状态更新一点时间
+            // 抵押成功后，关闭模态框，显示成功提示
+            setShowMortgageModal(false);
+            setMortgageSuccess(true);
+            // 不自动购买股票，让用户重新点击购买按钮
           } else {
             alert(result.error || '抵押失败');
           }
