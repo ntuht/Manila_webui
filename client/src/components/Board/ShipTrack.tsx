@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShipState, CargoType } from '../../types';
+import type { ShipState, CargoType } from '../../types';
 
 interface ShipTrackProps {
   ship: ShipState;

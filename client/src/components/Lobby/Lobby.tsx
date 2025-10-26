@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../../stores';
 import { Button, Card } from '../Shared';
-import { GameConfig } from '../../types';
+import type { GameConfig } from '../../types';
 
 export const Lobby: React.FC = () => {
   const { startGame } = useGameStore();

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGameStore } from './stores';
 import { GameLayout, GameInterface } from './components/Game';
 import { Lobby } from './components/Lobby/Lobby';

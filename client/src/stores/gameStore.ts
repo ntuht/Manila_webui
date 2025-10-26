@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { GameState, GamePhase, PlayerState, GameAction, ActionResult, GameConfig } from '../types';
+import type { GameState, GamePhase, PlayerState, GameAction, ActionResult, GameConfig } from '../types';
+import { GameEngine } from '../game/engine';
 
 interface GameStore {
   // 状态
@@ -9,6 +10,7 @@ interface GameStore {
   players: PlayerState[];
   isLoading: boolean;
   error: string | null;
+  engine: GameEngine;
   
   // 游戏控制
   startGame: (config: GameConfig) => void;
@@ -52,24 +54,15 @@ export const useGameStore = create<GameStore>()(
       players: [],
       isLoading: false,
       error: null,
+      engine: new GameEngine(),
       
       // 游戏控制
       startGame: (config: GameConfig) => {
         set({ isLoading: true, error: null });
         
         try {
-          // 初始化游戏状态
-          const gameState: GameState = {
-            gameId: `game-${Date.now()}`,
-            phase: 'AUCTION',
-            round: 1,
-            players: initializePlayers(config),
-            ships: initializeShips(),
-            stockPrices: { JADE: 0, SILK: 0, GINSENG: 0, NUTMEG: 0 },
-            gameConfig: config,
-            history: [],
-            currentPlayerIndex: 0
-          };
+          const { engine } = get();
+          const gameState = engine.initializeGame(config);
           
           set({ 
             gameState, 
@@ -146,31 +139,25 @@ export const useGameStore = create<GameStore>()(
       
       // 玩家操作
       makeBid: (playerId: string, amount: number) => {
-        const { gameState } = get();
+        const { engine } = get();
+        const gameState = engine.getGameState();
         if (!gameState) {
           return { success: false, error: 'Game not started' };
         }
         
-        // 验证出价
-        const player = gameState.players.find(p => p.id === playerId);
-        if (!player) {
-          return { success: false, error: 'Player not found' };
-        }
-        
-        if (amount > player.cash) {
-          return { success: false, error: 'Insufficient funds' };
-        }
-        
-        // 处理出价逻辑
-        const newState = { ...gameState };
-        const playerIndex = newState.players.findIndex(p => p.id === playerId);
-        newState.players[playerIndex] = {
-          ...player,
-          cash: player.cash - amount
+        const action: GameAction = {
+          type: 'BID',
+          playerId,
+          data: { amount },
+          timestamp: Date.now()
         };
         
-        set({ gameState: newState });
-        return { success: true, newState };
+        const result = engine.processAction(action);
+        if (result.success && result.newState) {
+          set({ gameState: result.newState });
+        }
+        
+        return result;
       },
       
       buyStock: (playerId: string, cargoType: string, quantity: number) => {

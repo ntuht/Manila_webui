@@ -1,5 +1,5 @@
 import React from 'react';
-import { GamePhase } from '../../types';
+import type { GamePhase } from '../../types';
 import { InvestmentSlot } from './InvestmentSlot';
 
 interface InvestmentAreaProps {
