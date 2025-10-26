@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 自定义 CSS 变量 */
+:root {
+  /* 主色调 */
+  --primary-50: #eff6ff;
+  --primary-100: #dbeafe;
+  --primary-500: #3b82f6;
+  --primary-600: #2563eb;
+  --primary-700: #1d4ed8;
+  --primary-900: #1e3a8a;
+
+  /* 游戏主题色 */
+  --game-ocean: #0ea5e9;      /* 海洋蓝 */
+  --game-ship: #f59e0b;       /* 船只黄 */
+  --game-cargo: #10b981;     /* 货物绿 */
+  --game-gold: #fbbf24;      /* 金币黄 */
+  
+  /* 货物颜色 */
+  --cargo-jade: #059669;     /* 翡翠绿 */
+  --cargo-silk: #2563eb;     /* 丝绸蓝 */
+  --cargo-ginseng: #eab308;  /* 人参黄 */
+  --cargo-nutmeg: #374151;   /* 肉豆蔻黑 */
+  
+  /* 状态颜色 */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+}
+
+/* 基础样式 */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+  
+  * {
+    @apply border-gray-200;
+  }
+}
+
+/* 组件样式 */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
+  .btn-primary {
+    @apply btn bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+  
+  .game-board {
+    @apply bg-gradient-to-b from-blue-100 to-blue-200 p-6 rounded-xl;
+  }
+  
+  .ship-track {
+    @apply bg-white rounded-lg p-4 shadow-sm;
+  }
+  
+  .player-panel {
+    @apply card hover:shadow-md transition-shadow;
+  }
+}
+
+/* 动画 */
+@layer utilities {
+  .animate-dice-roll {
+    animation: diceRoll 1s ease-in-out;
+  }
+  
+  .animate-ship-move {
+    animation: shipMove 0.5s ease-in-out;
+  }
+  
+  .animate-card-flip {
+    animation: cardFlip 0.3s ease-in-out;
+  }
+}
+
+@keyframes diceRoll {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes shipMove {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(100px); }
+}
+
+@keyframes cardFlip {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(180deg); }
+}
