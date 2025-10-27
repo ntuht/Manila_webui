@@ -329,31 +329,60 @@ export class GameEngine {
 
     const slotId = action.data.slotId as string;
     
-    // 投资成本映射
+    // 投资成本映射（根据InvestmentArea中的实际槽位）
     const investmentCosts: Record<string, number> = {
-      'CREW': 3,
-      'HARBOR_OFFICE': 4,
-      'SHIPYARD_OFFICE': 5,
-      'PIRATE': 6,
-      'NAVIGATOR': 7,
-      'INSURANCE': 8
+      'crew-jade': 3,
+      'crew-silk': 3,
+      'crew-ginseng': 1,
+      'harbor-office-a': 4,
+      'harbor-office-b': 3,
+      'harbor-office-c': 2,
+      'shipyard-office-a': 4,
+      'shipyard-office-b': 3,
+      'shipyard-office-c': 2,
+      'pirate-captain': 5,
+      'pirate-crew': 5,
+      'navigator-small': 2,
+      'navigator-big': 5,
+      'insurance': 0
     };
     
     const cost = investmentCosts[slotId];
-    if (cost && player.cash >= cost) {
+    if (cost !== undefined && player.cash >= cost) {
+      // 检查是否已经投资过这个槽位
+      const alreadyInvested = player.investments.some(inv => inv.slotId === slotId);
+      if (alreadyInvested) {
+        throw new Error('该槽位已被投资');
+      }
+      
       player.cash -= cost;
       player.investments.push({
         id: `investment-${Date.now()}`,
-        type: slotId,
+        slotId: slotId,
+        type: this.getInvestmentTypeFromSlotId(slotId),
         cost,
         round: state.round
       });
       
       // 推进投资轮次
       this.advanceInvestmentRound();
+    } else if (cost === undefined) {
+      throw new Error('无效的投资槽位');
+    } else {
+      throw new Error('资金不足');
     }
     
     return state;
+  }
+
+  private getInvestmentTypeFromSlotId(slotId: string): string {
+    if (slotId.startsWith('crew-')) return 'CREW';
+    if (slotId.startsWith('harbor-office-')) return 'HARBOR_OFFICE';
+    if (slotId.startsWith('shipyard-office-')) return 'SHIPYARD_OFFICE';
+    if (slotId.startsWith('pirate-')) return 'PIRATE';
+    if (slotId.startsWith('navigator-')) return 'NAVIGATOR';
+    if (slotId === 'insurance') return 'INSURANCE';
+    return 'UNKNOWN';
   }
 
   private processUseNavigator(state: GameState, _action: GameAction): GameState {

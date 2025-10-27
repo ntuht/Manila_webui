@@ -76,6 +76,7 @@ export interface StockHolding {
 // 投资记录
 export interface Investment {
   id: string;
+  slotId: string;  // 投资槽位ID
   type: InvestmentSlotType;
   cost: number;
   expectedReward: number;

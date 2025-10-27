@@ -1,4 +1,5 @@
 import React from 'react';
+import { useGameStore } from '../../stores';
 import type { GamePhase } from '../../types';
 import { InvestmentSlot } from './InvestmentSlot';
 
@@ -7,6 +8,7 @@ interface InvestmentAreaProps {
 }
 
 export const InvestmentArea: React.FC<InvestmentAreaProps> = ({ currentPhase }) => {
+  const { gameState, selectInvestment } = useGameStore();
   const investmentSlots = [
     {
       id: 'crew-jade',
@@ -140,30 +142,59 @@ export const InvestmentArea: React.FC<InvestmentAreaProps> = ({ currentPhase }) 
   ];
 
   const isInvestmentPhase = currentPhase === 'INVESTMENT';
+  
+  // 获取当前投资玩家
+  const currentPlayer = gameState?.investmentRound ? 
+    gameState.players.find(p => p.id === gameState.investmentRound!.investmentOrder[gameState.investmentRound!.currentPlayerIndex]) :
+    null;
+
+  const handleInvestmentSelect = (slotId: string) => {
+    if (isInvestmentPhase && currentPlayer) {
+      const result = selectInvestment(currentPlayer.id, slotId);
+      if (result.success) {
+        console.log('投资成功:', slotId);
+      } else {
+        alert(result.error || '投资失败');
+      }
+    }
+  };
 
   return (
     <div className="investment-area">
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">投资区域</h3>
         <p className="text-sm text-gray-600">
-          {isInvestmentPhase ? '选择投资槽位' : '投资阶段未开始'}
+          {isInvestmentPhase ? 
+            `当前玩家: ${currentPlayer?.name || '未知'} - 选择投资槽位` : 
+            '投资阶段未开始'
+          }
         </p>
+        {currentPlayer && (
+          <p className="text-sm text-blue-600 font-medium">
+            现金: {currentPlayer.cash}
+          </p>
+        )}
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {investmentSlots.map(slot => (
-          <InvestmentSlot
-            key={slot.id}
-            slot={slot}
-            isSelectable={isInvestmentPhase}
-            onSelect={() => {
-              if (isInvestmentPhase) {
-                console.log('Selected investment:', slot.id);
-                // TODO: 实现投资选择逻辑
-              }
-            }}
-          />
-        ))}
+        {investmentSlots.map(slot => {
+          const canAfford = currentPlayer ? currentPlayer.cash >= slot.cost : false;
+          const isOccupied = currentPlayer ? 
+            currentPlayer.investments.some(inv => inv.slotId === slot.id) : 
+            false;
+          
+          return (
+            <InvestmentSlot
+              key={slot.id}
+              slot={{
+                ...slot,
+                isOccupied: isOccupied
+              }}
+              isSelectable={isInvestmentPhase && canAfford && !isOccupied}
+              onSelect={() => handleInvestmentSelect(slot.id)}
+            />
+          );
+        })}
       </div>
     </div>
   );

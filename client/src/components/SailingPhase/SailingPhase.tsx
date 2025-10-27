@@ -58,27 +58,43 @@ export const SailingPhase: React.FC = () => {
                 投掷骰子
               </Button>
             ) : diceResults ? (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center justify-center space-x-4">
-                  <div className="text-2xl">🎲</div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {diceResults.dice1}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <div className="flex items-center justify-center space-x-6">
+                  {/* 骰子1 - 红色 */}
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                      {diceResults.dice1}
+                    </div>
+                    <span className="text-xs text-gray-600">骰子1</span>
                   </div>
-                  <div className="text-2xl">🎲</div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {diceResults.dice2}
+                  
+                  {/* 骰子2 - 绿色 */}
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                      {diceResults.dice2}
+                    </div>
+                    <span className="text-xs text-gray-600">骰子2</span>
                   </div>
-                  <div className="text-2xl">🎲</div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {diceResults.dice3}
+                  
+                  {/* 骰子3 - 蓝色 */}
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                      {diceResults.dice3}
+                    </div>
+                    <span className="text-xs text-gray-600">骰子3</span>
                   </div>
-                  <div className="text-2xl">=</div>
-                  <div className="text-3xl font-bold text-green-600">
-                    {diceResults.total}
+                  
+                  {/* 等号和总和 */}
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="text-2xl font-bold text-gray-600">=</div>
+                    <div className="w-16 h-12 bg-yellow-400 rounded-lg flex items-center justify-center text-black text-2xl font-bold shadow-lg">
+                      {diceResults.total}
+                    </div>
+                    <span className="text-xs text-gray-600">总和</span>
                   </div>
                 </div>
-                <p className="text-sm text-center text-gray-600 mt-2">
-                  船只将移动 {diceResults.total} 格
+                <p className="text-center text-gray-700 mt-4 font-medium">
+                  船只将移动 <span className="text-green-600 font-bold">{diceResults.total}</span> 格
                 </p>
               </div>
             ) : null}

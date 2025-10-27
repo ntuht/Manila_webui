@@ -32,14 +32,16 @@ export const GameInterface: React.FC = () => {
         </div>
       )}
       
-      {/* 投资阶段 */}
+      {/* 投资阶段 - 使用投资区域 */}
       {gameState?.phase === 'INVESTMENT' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <InvestmentPhase />
+            <InvestmentHistory />
           </div>
           <div className="lg:col-span-1">
-            <InvestmentHistory />
+            <div className="text-sm text-gray-500">
+              投资区域在下方游戏棋盘中使用
+            </div>
           </div>
         </div>
       )}
