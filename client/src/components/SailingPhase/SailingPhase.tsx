@@ -59,43 +59,79 @@ export const SailingPhase: React.FC = () => {
               </Button>
             ) : diceResults ? (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <div className="flex items-center justify-center space-x-6">
-                  {/* 骰子1 - 红色 */}
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                      {diceResults.dice1}
+                <div className="space-y-4">
+                  {/* 骰子结果 - 按船只货物类型显示 */}
+                  <div className="flex items-center justify-center space-x-6">
+                    {gameState.ships.map((ship, index) => {
+                      const diceValue = index === 0 ? diceResults.dice1 : 
+                                       index === 1 ? diceResults.dice2 : 
+                                       diceResults.dice3;
+                      
+                      const getCargoColor = (cargoType: string) => {
+                        const colors = {
+                          'JADE': 'bg-cargo-jade',      // 翡翠绿
+                          'SILK': 'bg-cargo-silk',      // 丝绸蓝
+                          'GINSENG': 'bg-cargo-ginseng', // 人参黄
+                          'NUTMEG': 'bg-cargo-nutmeg'   // 肉豆蔻黑
+                        };
+                        return colors[cargoType as keyof typeof colors] || 'bg-gray-500';
+                      };
+                      
+                      const getCargoName = (cargoType: string) => {
+                        const names = {
+                          'JADE': '翡翠',
+                          'SILK': '丝绸',
+                          'GINSENG': '人参',
+                          'NUTMEG': '肉豆蔻'
+                        };
+                        return names[cargoType as keyof typeof names] || cargoType;
+                      };
+                      
+                      return (
+                        <div key={ship.id} className="flex flex-col items-center space-y-2">
+                          <div className={`w-12 h-12 ${getCargoColor(ship.cargoType)} rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-lg`}>
+                            {diceValue}
+                          </div>
+                          <span className="text-xs text-gray-600 font-medium">
+                            {getCargoName(ship.cargoType)}船
+                          </span>
+                        </div>
+                      );
+                    })}
+                    
+                    {/* 等号和总和 */}
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="text-2xl font-bold text-gray-600">=</div>
+                      <div className="w-16 h-12 bg-yellow-400 rounded-lg flex items-center justify-center text-black text-2xl font-bold shadow-lg">
+                        {diceResults.total}
+                      </div>
+                      <span className="text-xs text-gray-600">总和</span>
                     </div>
-                    <span className="text-xs text-gray-600">骰子1</span>
                   </div>
                   
-                  {/* 骰子2 - 绿色 */}
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                      {diceResults.dice2}
+                  {/* 移动信息 */}
+                  <div className="text-center">
+                    <p className="text-gray-700 font-medium">
+                      所有船只将移动 <span className="text-green-600 font-bold">{diceResults.total}</span> 格
+                    </p>
+                    <div className="mt-2 text-sm text-gray-600">
+                      <div className="flex justify-center space-x-4">
+                        {gameState.ships.map((ship, index) => {
+                          const diceValue = index === 0 ? diceResults.dice1 : 
+                                           index === 1 ? diceResults.dice2 : 
+                                           diceResults.dice3;
+                          const newPosition = ship.position + diceValue;
+                          
+                          return (
+                            <span key={ship.id} className="text-xs">
+                              {ship.cargoType}船: {ship.position} → {newPosition}
+                            </span>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <span className="text-xs text-gray-600">骰子2</span>
-                  </div>
-                  
-                  {/* 骰子3 - 蓝色 */}
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                      {diceResults.dice3}
-                    </div>
-                    <span className="text-xs text-gray-600">骰子3</span>
-                  </div>
-                  
-                  {/* 等号和总和 */}
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="text-2xl font-bold text-gray-600">=</div>
-                    <div className="w-16 h-12 bg-yellow-400 rounded-lg flex items-center justify-center text-black text-2xl font-bold shadow-lg">
-                      {diceResults.total}
-                    </div>
-                    <span className="text-xs text-gray-600">总和</span>
                   </div>
                 </div>
-                <p className="text-center text-gray-700 mt-4 font-medium">
-                  船只将移动 <span className="text-green-600 font-bold">{diceResults.total}</span> 格
-                </p>
               </div>
             ) : null}
           </div>
