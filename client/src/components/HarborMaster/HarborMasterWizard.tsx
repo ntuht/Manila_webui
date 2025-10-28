@@ -13,7 +13,7 @@ export const HarborMasterWizard: React.FC = () => {
   if (!harborMaster) return null;
   
   return (
-    <Modal isOpen={true} size="lg" title="港务长行动">
+    <Modal isOpen={true} size="lg" title="港务长行动" onClose={() => {}}>
       <div className="space-y-6">
         {/* 步骤指示器 */}
         <StepIndicator currentStep={harborMaster.currentStep} />

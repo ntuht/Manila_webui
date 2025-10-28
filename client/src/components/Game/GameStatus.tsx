@@ -93,6 +93,30 @@ export const GameStatus: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* 当前事件（调试信息） */}
+        {gameState.gameFlow && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600">当前事件</span>
+              <span className="text-xs font-mono text-gray-700">
+                {gameState.gameFlow.eventSequence[gameState.gameFlow.currentEventIndex] || 'N/A'} ({gameState.gameFlow.currentEventIndex}/{gameState.gameFlow.eventSequence.length})
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* 投资轮次（如果有） */}
+        {gameState.investmentRound && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600">投资进度</span>
+              <span className="text-xs text-gray-700">
+                玩家 {gameState.investmentRound.currentPlayerIndex + 1}/{gameState.investmentRound.investmentOrder.length}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

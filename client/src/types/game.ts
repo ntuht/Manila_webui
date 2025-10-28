@@ -4,7 +4,34 @@
 export type CargoType = 'JADE' | 'SILK' | 'GINSENG' | 'NUTMEG';
 
 // 游戏阶段
-export type GamePhase = 'LOBBY' | 'AUCTION' | 'INVESTMENT' | 'SAILING' | 'SETTLEMENT' | 'GAME_END';
+export type GamePhase = 
+  | 'LOBBY'
+  | 'AUCTION'
+  | 'HARBOR_MASTER'
+  | 'INVESTMENT'
+  | 'SAILING'
+  | 'NAVIGATOR_USE'
+  | 'PIRATE_ONBOARD'
+  | 'PIRATE_HIJACK'
+  | 'SETTLEMENT'
+  | 'GAME_END';
+
+// 游戏事件类型
+export type GameEvent = 
+  | 'AUCTION'          // 拍卖阶段
+  | 'HARBOR_MASTER'    // 港务长行动
+  | 'INVESTMENT'       // 投资阶段
+  | 'NAVIGATOR_USE'    // 领航员使用（最后一次骰子前）
+  | 'DICE_ROLL'        // 投掷骰子
+  | 'PIRATE_ONBOARD'   // 海盗上船判定（第2次骰子后）
+  | 'PIRATE_HIJACK'    // 海盗劫持判定（第3次骰子后）
+  | 'SETTLEMENT';      // 结算
+
+// 游戏流程
+export interface GameFlow {
+  eventSequence: GameEvent[];
+  currentEventIndex: number;
+}
 
 // 港务长阶段
 export type HarborMasterPhase = 
@@ -22,7 +49,41 @@ export type ActionType =
   | 'SELECT_INVESTMENT' 
   | 'USE_NAVIGATOR' 
   | 'ROLL_DICE'
+  | 'PIRATE_ONBOARD_ACTION'          // 海盗上船行动
+  | 'PIRATE_HIJACK_ACTION'           // 海盗劫持行动
   | 'END_PHASE';
+
+// 海盗行动类型
+export type PirateAction = 
+  | 'BOARD'        // 上船
+  | 'KICK'         // 踢人
+  | 'PASS';        // 放弃
+
+// 领航员行动类型
+export type NavigatorAction = 
+  | 'MOVE_FORWARD'  // 向前移动
+  | 'MOVE_BACKWARD' // 向后移动
+  | 'PASS';         // 放弃
+
+// 海盗上船状态
+export interface PirateOnboardState {
+  shipsAt13: CargoType[];
+  piratePlayers: string[];
+  currentPirateIndex: number;
+}
+
+// 海盗劫持状态
+export interface PirateHijackState {
+  shipsAt13: CargoType[];
+  pirateCaptain: string | null;
+  hijackDecision: 'DOCK' | 'SHIPYARD' | null;
+}
+
+// 领航员使用状态
+export interface NavigatorUseState {
+  navigatorPlayers: string[];
+  currentNavigatorIndex: number;
+}
 
 // 投资槽位类型
 export type InvestmentSlotType = 
@@ -118,6 +179,12 @@ export interface GameState {
   diceResults?: DiceResult[];
   harborMaster?: HarborMasterState;
   investmentRound?: InvestmentRoundState;
+  selectedCargos?: CargoType[];  // 港务长选择的货物（投资阶段使用）
+  sailingPhase?: number;  // 当前航行阶段 (1-3)
+  gameFlow?: GameFlow;  // 游戏流程状态
+  pirateOnboardState?: PirateOnboardState;  // 海盗上船状态
+  pirateHijackState?: PirateHijackState;  // 海盗劫持状态
+  navigatorUseState?: NavigatorUseState;  // 领航员使用状态
 }
 
 // 股票价格
@@ -257,12 +324,6 @@ export interface AIStrategy {
   selectStockPurchase(state: GameState, playerId: string): CargoType | null;
 }
 
-// 游戏事件
-export interface GameEvent {
-  type: string;
-  data: any;
-  timestamp: number;
-}
 
 // 游戏设置
 export interface GameSettings {

@@ -167,8 +167,19 @@ export const useGameStore = create<GameStore>()(
       },
       
       buyStock: (playerId: string, cargoType: string, quantity: number) => {
-        // 购买股票逻辑
-        return { success: true };
+        const { engine } = get();
+        const action: GameAction = {
+          type: 'BUY_STOCK',
+          playerId,
+          data: { cargoType, quantity },
+          timestamp: Date.now()
+        };
+        
+        const result = engine.processAction(action);
+        if (result.success && result.newState) {
+          set({ gameState: result.newState });
+        }
+        return result;
       },
       
       mortgageStock: (playerId: string, cargoType: string, quantity: number) => {
@@ -387,54 +398,3 @@ export const useGameStore = create<GameStore>()(
   )
 );
 
-// 辅助函数
-function initializePlayers(config: GameConfig): PlayerState[] {
-  const players: PlayerState[] = [];
-  
-  for (let i = 0; i < config.players; i++) {
-    players.push({
-      id: `player${i + 1}`,
-      name: i === 0 ? 'You' : `AI Player ${i}`,
-      cash: 30,
-      stocks: [],
-      investments: [],
-      isActive: true,
-      isAI: i > 0,
-      aiStrategy: i > 0 ? config.aiStrategies[i - 1] : undefined
-    });
-  }
-  
-  return players;
-}
-
-function initializeShips() {
-  return [
-    {
-      id: 'ship1',
-      cargoType: 'JADE' as const,
-      position: 0,
-      crew: [],
-      isDocked: false,
-      isInShipyard: false,
-      isHijacked: false
-    },
-    {
-      id: 'ship2',
-      cargoType: 'SILK' as const,
-      position: 0,
-      crew: [],
-      isDocked: false,
-      isInShipyard: false,
-      isHijacked: false
-    },
-    {
-      id: 'ship3',
-      cargoType: 'GINSENG' as const,
-      position: 0,
-      crew: [],
-      isDocked: false,
-      isInShipyard: false,
-      isHijacked: false
-    }
-  ];
-}

@@ -22,7 +22,7 @@ export const BidHistory: React.FC = () => {
   return (
     <Card title="出价历史" className="p-4">
       <div className="space-y-2">
-        {bidHistory.map((entry, index) => {
+        {bidHistory.map((entry) => {
           const player = gameState.players.find(p => p.id === entry.playerId);
           return (
             <div key={entry.id} className="flex justify-between items-center text-sm">

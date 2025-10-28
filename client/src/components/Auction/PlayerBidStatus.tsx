@@ -1,6 +1,4 @@
 import React from 'react';
-import { useGameStore } from '../../stores';
-import { Card } from '../Shared/Card';
 import type { PlayerState } from '../../types';
 
 interface PlayerBidStatusProps {

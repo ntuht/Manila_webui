@@ -2,4 +2,3 @@
 export { useGameStore } from './gameStore';
 
 // 导出类型
-export type { GameStore } from './gameStore';

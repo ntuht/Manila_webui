@@ -5,18 +5,21 @@ import { Button } from '../Shared/Button';
 
 export const SailingPhase: React.FC = () => {
   const { gameState, rollDice, useNavigator } = useGameStore();
-  const [diceRolled, setDiceRolled] = useState(false);
   const [navigatorUsed, setNavigatorUsed] = useState(false);
   
   if (!gameState) return null;
   
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-  const diceResults = gameState.diceResults?.[0];
+  const diceResults = gameState.diceResults && gameState.diceResults.length > 0 ? 
+    gameState.diceResults[gameState.diceResults.length - 1] : null;
+  
+  // 检查是否已经投掷过骰子
+  const hasRolledDice = diceResults !== null;
   
   const handleRollDice = () => {
     const result = rollDice();
     if (result.success) {
-      setDiceRolled(true);
+      // 骰子投掷成功，状态会通过gameState更新
     } else {
       alert(result.error || '投掷骰子失败');
     }
@@ -39,21 +42,21 @@ export const SailingPhase: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
-                当前玩家: {currentPlayer.name}
+                航行阶段 {gameState.sailingPhase || 1} / 3
               </h3>
               <p className="text-sm text-gray-600">
-                现金: {currentPlayer.cash}
+                轮次 {gameState.round} / {gameState.gameConfig.rounds}
               </p>
             </div>
             <div className="text-sm text-gray-500">
-              轮次 {gameState.round} / {gameState.gameConfig.rounds}
+              当前玩家: {currentPlayer.name}
             </div>
           </div>
           
           {/* 骰子投掷 */}
           <div className="space-y-4">
             <h4 className="font-medium text-gray-900">投掷骰子</h4>
-            {!diceRolled ? (
+            {!hasRolledDice ? (
               <Button onClick={handleRollDice} className="w-full">
                 投掷骰子
               </Button>
@@ -137,7 +140,7 @@ export const SailingPhase: React.FC = () => {
           </div>
           
           {/* 领航员选项 */}
-          {diceRolled && !navigatorUsed && (
+          {hasRolledDice && !navigatorUsed && (
             <div className="space-y-4">
               <h4 className="font-medium text-gray-900">使用领航员（可选）</h4>
               <div className="grid grid-cols-2 gap-4">

@@ -22,7 +22,7 @@ export const InvestmentHistory: React.FC = () => {
   return (
     <Card title="投资历史" className="p-4">
       <div className="space-y-2">
-        {investmentHistory.map((entry, index) => {
+        {investmentHistory.map((entry) => {
           const player = gameState.players.find(p => p.id === entry.playerId);
           return (
             <div key={entry.id} className="flex justify-between items-center text-sm">

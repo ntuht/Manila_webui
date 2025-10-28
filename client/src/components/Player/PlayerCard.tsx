@@ -1,6 +1,5 @@
 import React from 'react';
 import type { PlayerState } from '../../types';
-import { Card } from '../Shared/Card';
 
 interface PlayerCardProps {
   player: PlayerState;

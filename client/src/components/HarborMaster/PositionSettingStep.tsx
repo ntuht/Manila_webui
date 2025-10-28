@@ -5,13 +5,23 @@ import type { CargoType } from '../../types';
 
 export const PositionSettingStep: React.FC = () => {
   const { gameState, setShipPositions } = useGameStore();
-  const [positions, setPositions] = useState<Record<CargoType, number>>({});
+  const [positions, setPositions] = useState<Record<CargoType, number>>({
+    JADE: 0,
+    SILK: 0,
+    GINSENG: 0,
+    NUTMEG: 0
+  });
   
   const harborMaster = gameState?.harborMaster;
   
   useEffect(() => {
     if (harborMaster?.selectedCargos) {
-      const initialPositions: Record<CargoType, number> = {};
+      const initialPositions: Record<CargoType, number> = {
+        JADE: 0,
+        SILK: 0,
+        GINSENG: 0,
+        NUTMEG: 0
+      };
       harborMaster.selectedCargos.forEach(cargo => {
         initialPositions[cargo] = 0;
       });

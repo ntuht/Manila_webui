@@ -73,21 +73,49 @@ export const ActionPanel: React.FC = () => {
         );
 
       case 'SAILING':
+        // 检查当前事件是否为DICE_ROLL
+        const currentEvent = gameState?.gameFlow?.eventSequence[
+          gameState.gameFlow.currentEventIndex
+        ];
+        
+        // 只有在DICE_ROLL事件时才能投掷骰子
+        if (currentEvent !== 'DICE_ROLL') {
+          return (
+            <div className="space-y-3">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">
+                  等待航行完成...
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  当前事件: {currentEvent || '未知'}
+                </p>
+              </div>
+            </div>
+          );
+        }
+        
+        // 检查是否已经投掷过骰子
+        const hasRolledDice = gameState?.diceResults && gameState.diceResults.length > 0;
+        
         return (
           <div className="space-y-3">
-            <Button
-              onClick={handleRollDice}
-              className="w-full"
-            >
-              投掷骰子
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleNextPhase}
-              className="w-full"
-            >
-              结束航行
-            </Button>
+            {!hasRolledDice ? (
+              <Button
+                onClick={handleRollDice}
+                className="w-full"
+              >
+                投掷骰子
+              </Button>
+            ) : (
+              <div className="text-center">
+                <p className="text-sm text-green-600 font-medium mb-2">
+                  ✓ 骰子已投掷
+                </p>
+                <p className="text-xs text-gray-600">
+                  船只正在移动...
+                </p>
+              </div>
+            )}
           </div>
         );
 

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useGameStore } from '../../stores';
 import { Card } from '../Shared/Card';
 import { Button } from '../Shared/Button';
-import { Modal } from '../Shared/Modal';
 import { MortgageStockModal } from '../HarborMaster/MortgageStockModal';
 import type { CargoType } from '../../types';
 
@@ -10,8 +9,6 @@ export const AuctionPhase: React.FC = () => {
   const { gameState, makeBid, mortgageStock } = useGameStore();
   const [bidAmount, setBidAmount] = useState(0);
   const [showMortgageModal, setShowMortgageModal] = useState(false);
-  const [selectedCargo, setSelectedCargo] = useState<CargoType | null>(null);
-  const [mortgageQuantity, setMortgageQuantity] = useState(1);
   
   if (!gameState) return null;
   

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useGameStore } from '../../stores';
 import { Card } from '../Shared/Card';
 import { Button } from '../Shared/Button';
-import { InvestmentSlot } from '../Board/InvestmentSlot';
 import type { InvestmentSlotType } from '../../types';
 
 export const InvestmentPhase: React.FC = () => {
