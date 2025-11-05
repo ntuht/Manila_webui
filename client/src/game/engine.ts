@@ -527,22 +527,26 @@ export class GameEngine {
       return null;
     }
     
-    const { currentPlayerIndex, investmentOrder } = this.state.investmentRound;
+    const { currentPlayerIndex, investmentOrder, currentRound } = this.state.investmentRound;
+    const currentPlayerId = investmentOrder[currentPlayerIndex];
     const nextPlayerIndex = currentPlayerIndex + 1;
     
-    console.log(`[GameFlow] Investment: player ${currentPlayerIndex + 1}/${investmentOrder.length} completed`);
+    console.log(`[GameFlow] Investment Round ${currentRound}: Player ${currentPlayerId} (${currentPlayerIndex + 1}/${investmentOrder.length}) completed investment`);
     
     if (nextPlayerIndex >= investmentOrder.length) {
       // 本轮投资完成，进入下一个事件
-      console.log('[GameFlow] All players invested in this round, advancing to next event');
+      console.log(`[GameFlow] Investment Round ${currentRound} completed: All ${investmentOrder.length} players have invested`);
+      console.log(`[GameFlow] Current event index: ${this.state.gameFlow?.currentEventIndex}`);
+      console.log(`[GameFlow] Current event: ${this.getCurrentEvent()}`);
       
       // 直接推进到下一个事件
       // clearEventState会处理状态清理
       return this.advanceToNextEvent();
     } else {
       // 下一个玩家投资
+      const nextPlayerId = investmentOrder[nextPlayerIndex];
       this.state.investmentRound.currentPlayerIndex = nextPlayerIndex;
-      console.log(`[GameFlow] Next player: ${nextPlayerIndex + 1}/${investmentOrder.length}`);
+      console.log(`[GameFlow] Next player to invest: ${nextPlayerId} (${nextPlayerIndex + 1}/${investmentOrder.length})`);
       return this.state;
     }
   }
@@ -795,7 +799,11 @@ export class GameEngine {
     const currentEventIndex = this.state.gameFlow.currentEventIndex;
     const currentEvent = this.state.gameFlow.eventSequence[currentEventIndex];
     
+    console.log(`[GameFlow] ========================================`);
     console.log(`[GameFlow] Advancing from event ${currentEventIndex}: ${currentEvent}`);
+    if (this.state.investmentRound) {
+      console.log(`[GameFlow] Current investment state: player ${this.state.investmentRound.currentPlayerIndex + 1}/${this.state.investmentRound.investmentOrder.length}, order: ${this.state.investmentRound.investmentOrder.join(', ')}`);
+    }
     
     this.state.gameFlow.currentEventIndex++;
     const nextEvent = this.getCurrentEvent();
@@ -804,40 +812,40 @@ export class GameEngine {
     
     if (!nextEvent) {
       // 游戏结束
+      console.log(`[GameFlow] Game ended - no more events`);
       this.state.phase = 'GAME_END';
       return this.state;
     }
     
     // 清除上一个事件的临时状态
-    this.clearEventState(this.state, nextEvent);
+    this.clearEventState(this.state, currentEvent, nextEvent);
     
     // 根据事件设置游戏阶段
     this.state.phase = this.eventToPhase(nextEvent);
+    console.log(`[GameFlow] Phase set to: ${this.state.phase}`);
     
     // 初始化事件特定状态
     this.initializeEventState(nextEvent);
     
+    console.log(`[GameFlow] ========================================`);
     return this.state;
   }
 
-  private clearEventState(state: GameState, nextEvent: GameEvent): void {
+  private clearEventState(state: GameState, currentEvent: GameEvent, nextEvent: GameEvent): void {
     // 清除骰子结果（仅在进入非DICE_ROLL事件时）
     if (nextEvent !== 'DICE_ROLL') {
       console.log('[GameFlow] Clearing dice results');
       state.diceResults = [];
     }
     
-    // 当进入新的INVESTMENT事件时，重置投资轮次的玩家索引
-    if (nextEvent === 'INVESTMENT' && state.investmentRound) {
-      console.log('[GameFlow] Resetting investment round player index to 0');
-      state.investmentRound.currentPlayerIndex = 0;
-    }
-    
     // 当离开INVESTMENT进入非INVESTMENT事件时，清除投资轮次状态
-    if (nextEvent !== 'INVESTMENT' && state.investmentRound) {
-      console.log('[GameFlow] Clearing investment round state');
+    if (currentEvent === 'INVESTMENT' && nextEvent !== 'INVESTMENT' && state.investmentRound) {
+      console.log('[GameFlow] Clearing investment round state (leaving INVESTMENT)');
       state.investmentRound = undefined;
     }
+    
+    // 注意：不要在这里重置 currentPlayerIndex
+    // 应该在 initializeEventState 中处理
   }
 
   private getCurrentEvent(): GameEvent | null {
@@ -866,13 +874,15 @@ export class GameEngine {
 
     switch (event) {
       case 'INVESTMENT':
-        // 如果没有投资轮次状态，初始化它
-        // clearEventState已经处理了重置currentPlayerIndex的情况
         if (!this.state.investmentRound) {
+          // 第一次投资，初始化
           console.log('[GameFlow] Initializing new investment round');
           this.initializeInvestmentRound(this.state);
         } else {
-          console.log('[GameFlow] Reusing existing investment round state');
+          // 连续的投资事件，重置玩家索引但保持投资顺序
+          console.log('[GameFlow] Reusing investment round, resetting player index to 0');
+          this.state.investmentRound.currentPlayerIndex = 0;
+          // 保持 investmentOrder 不变
         }
         break;
       case 'PIRATE_ONBOARD':
