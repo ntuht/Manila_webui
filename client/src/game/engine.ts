@@ -343,9 +343,14 @@ export class GameEngine {
     const player = state.players.find(p => p.id === action.playerId);
     if (!player) return state;
 
-    // 验证当前玩家是否是应该投资的玩家
+    // 验证当前阶段是否是投资阶段
+    if (state.phase !== 'INVESTMENT') {
+      throw new Error(`当前不在投资阶段，当前阶段: ${state.phase}`);
+    }
+    
+    // 验证投资轮次状态是否存在
     if (!state.investmentRound) {
-      throw new Error('当前不在投资阶段');
+      throw new Error('投资轮次状态不存在');
     }
     
     const { currentPlayerIndex, investmentOrder } = state.investmentRound;
@@ -895,12 +900,34 @@ export class GameEngine {
           console.log('[GameFlow] Initializing new investment round');
           this.initializeInvestmentRound(this.state);
         } else {
-          // 连续的投资事件，重置玩家索引但保持投资顺序
+          // 连续的投资事件，重置玩家索引但保持投资顺序，并更新轮次
+          const currentEventIndex = this.state.gameFlow?.currentEventIndex ?? 0;
           console.log('[GameFlow] Reusing investment round, resetting player index to 0');
           console.log(`[GameFlow] Existing investment order: ${this.state.investmentRound.investmentOrder.join(', ')}`);
+          console.log(`[GameFlow] Current event index: ${currentEventIndex}`);
+          
+          // 根据事件索引计算投资轮次
+          // 3人游戏：索引2=轮1, 索引3=轮2, 索引5=轮3, 索引8=轮4
+          // 4人游戏：索引2=轮1, 索引4=轮2, 索引7=轮3
+          const playerCount = this.state.players.length;
+          let newRound = 1;
+          if (playerCount === 3) {
+            // GAME_FLOW_3P: [AUCTION(0), HARBOR_MASTER(1), INVESTMENT(2), INVESTMENT(3), DICE_ROLL(4), INVESTMENT(5), ...]
+            if (currentEventIndex === 2) newRound = 1;
+            else if (currentEventIndex === 3) newRound = 2;
+            else if (currentEventIndex === 5) newRound = 3;
+            else if (currentEventIndex === 8) newRound = 4;
+          } else if (playerCount === 4) {
+            // GAME_FLOW_4P: [AUCTION(0), HARBOR_MASTER(1), INVESTMENT(2), DICE_ROLL(3), INVESTMENT(4), ...]
+            if (currentEventIndex === 2) newRound = 1;
+            else if (currentEventIndex === 4) newRound = 2;
+            else if (currentEventIndex === 7) newRound = 3;
+          }
+          
           this.state.investmentRound.currentPlayerIndex = 0;
+          this.state.investmentRound.currentRound = newRound;
           // 保持 investmentOrder 不变
-          console.log(`[GameFlow] Reset to first player: ${this.state.investmentRound.investmentOrder[0]}`);
+          console.log(`[GameFlow] Reset to first player: ${this.state.investmentRound.investmentOrder[0]}, Round: ${newRound}`);
         }
         break;
       case 'PIRATE_ONBOARD':
