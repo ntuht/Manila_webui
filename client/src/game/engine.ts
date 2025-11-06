@@ -395,8 +395,11 @@ export class GameEngine {
       }
       
       // 推进投资轮次
+      // 注意：advanceInvestmentRound 会修改 this.state，所以需要先保存当前状态
       const updatedState = this.advanceInvestmentRound();
       if (updatedState) {
+        // 确保返回的状态包含最新的 gameFlow
+        console.log(`[GameFlow] processSelectInvestment: returning state with event index ${updatedState.gameFlow?.currentEventIndex}`);
         return updatedState;
       }
     } else if (cost === undefined) {
@@ -557,12 +560,23 @@ export class GameEngine {
     if (nextPlayerIndex >= investmentOrder.length) {
       // 本轮投资完成，进入下一个事件
       console.log(`[GameFlow] Investment Round ${currentRound} completed: All ${investmentOrder.length} players have invested`);
-      console.log(`[GameFlow] Current event index: ${this.state.gameFlow?.currentEventIndex}`);
-      console.log(`[GameFlow] Current event: ${this.getCurrentEvent()}`);
+      
+      // 在推进之前，保存当前事件索引用于调试
+      const beforeAdvanceIndex = this.state.gameFlow?.currentEventIndex;
+      const beforeAdvanceEvent = this.getCurrentEvent();
+      console.log(`[GameFlow] Before advanceToNextEvent: index=${beforeAdvanceIndex}, event=${beforeAdvanceEvent}`);
       
       // 直接推进到下一个事件
       // clearEventState会处理状态清理
-      return this.advanceToNextEvent();
+      const result = this.advanceToNextEvent();
+      
+      if (result) {
+        const afterAdvanceIndex = result.gameFlow?.currentEventIndex;
+        const afterAdvanceEvent = this.getCurrentEvent();
+        console.log(`[GameFlow] After advanceToNextEvent: index=${afterAdvanceIndex}, event=${afterAdvanceEvent}`);
+      }
+      
+      return result;
     } else {
       // 下一个玩家投资
       const nextPlayerId = investmentOrder[nextPlayerIndex];
