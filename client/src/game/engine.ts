@@ -343,6 +343,22 @@ export class GameEngine {
     const player = state.players.find(p => p.id === action.playerId);
     if (!player) return state;
 
+    // 验证当前玩家是否是应该投资的玩家
+    if (!state.investmentRound) {
+      throw new Error('当前不在投资阶段');
+    }
+    
+    const { currentPlayerIndex, investmentOrder } = state.investmentRound;
+    const expectedPlayerId = investmentOrder[currentPlayerIndex];
+    
+    console.log(`[GameFlow] Investment attempt: Player ${action.playerId}, Expected: ${expectedPlayerId}, Index: ${currentPlayerIndex}/${investmentOrder.length - 1}`);
+    console.log(`[GameFlow] Investment order: ${investmentOrder.join(', ')}`);
+    
+    if (action.playerId !== expectedPlayerId) {
+      const expectedPlayer = state.players.find(p => p.id === expectedPlayerId);
+      throw new Error(`当前不是 ${expectedPlayer?.name || expectedPlayerId} 的投资回合`);
+    }
+
     const slotId = action.data.slotId as string;
     
     // 计算投资成本（船员投资根据已投资数量递增）
@@ -878,11 +894,14 @@ export class GameEngine {
           // 第一次投资，初始化
           console.log('[GameFlow] Initializing new investment round');
           this.initializeInvestmentRound(this.state);
+          console.log(`[GameFlow] Investment order: ${this.state.investmentRound.investmentOrder.join(', ')}`);
         } else {
           // 连续的投资事件，重置玩家索引但保持投资顺序
           console.log('[GameFlow] Reusing investment round, resetting player index to 0');
+          console.log(`[GameFlow] Existing investment order: ${this.state.investmentRound.investmentOrder.join(', ')}`);
           this.state.investmentRound.currentPlayerIndex = 0;
           // 保持 investmentOrder 不变
+          console.log(`[GameFlow] Reset to first player: ${this.state.investmentRound.investmentOrder[0]}`);
         }
         break;
       case 'PIRATE_ONBOARD':
