@@ -894,7 +894,6 @@ export class GameEngine {
           // 第一次投资，初始化
           console.log('[GameFlow] Initializing new investment round');
           this.initializeInvestmentRound(this.state);
-          console.log(`[GameFlow] Investment order: ${this.state.investmentRound.investmentOrder.join(', ')}`);
         } else {
           // 连续的投资事件，重置玩家索引但保持投资顺序
           console.log('[GameFlow] Reusing investment round, resetting player index to 0');
