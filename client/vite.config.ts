@@ -40,10 +40,11 @@ export default defineConfig({
     alias: {
       '@manila/engine': path.resolve(__dirname, '../packages/engine/src/index.ts'),
       '@manila/rl': path.resolve(__dirname, '../packages/rl/src/index.ts'),
+      '@manila/strategy': path.resolve(__dirname, '../packages/strategy/src/index.ts'),
     },
   },
   optimizeDeps: {
-    exclude: ['@manila/engine', '@manila/rl'],
+    exclude: ['@manila/engine', '@manila/rl', '@manila/strategy'],
   },
 })
 
