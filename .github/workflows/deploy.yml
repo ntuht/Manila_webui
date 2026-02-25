@@ -38,7 +38,7 @@ jobs:
         working-directory: packages/engine
 
       - name: Build client
-        run: npm run build
+        run: npx vite build
         working-directory: client
         env:
           GITHUB_PAGES: true
