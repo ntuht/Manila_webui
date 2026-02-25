@@ -4,13 +4,13 @@ import { Card } from '../Shared/Card';
 
 export const BidHistory: React.FC = () => {
   const { gameState } = useGameStore();
-  
+
   if (!gameState) return null;
-  
-  const bidHistory = gameState.history.filter(entry => 
-    entry.action.type === 'BID'
+
+  const bidHistory = gameState.history.filter(entry =>
+    entry.action === 'BID'
   ).slice(-5); // 显示最近5次出价
-  
+
   if (bidHistory.length === 0) {
     return (
       <Card title="出价历史" className="p-4">
@@ -18,7 +18,7 @@ export const BidHistory: React.FC = () => {
       </Card>
     );
   }
-  
+
   return (
     <Card title="出价历史" className="p-4">
       <div className="space-y-2">
@@ -30,7 +30,7 @@ export const BidHistory: React.FC = () => {
                 {player?.name}
               </span>
               <span className="font-medium text-blue-600">
-                {entry.action.data.amount}
+                {entry.detail}
               </span>
             </div>
           );

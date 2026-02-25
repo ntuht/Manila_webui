@@ -37,7 +37,7 @@ export const GameBoard: React.FC = () => {
           <ShipTrack key={ship.id} ship={ship} />
         ))}
       </div>
-      
+
       {/* 投资区域 */}
       <InvestmentArea currentPhase={currentPhase} />
     </div>
@@ -47,6 +47,7 @@ export const GameBoard: React.FC = () => {
 function getPhaseDisplayName(phase: string): string {
   const phaseNames: Record<string, string> = {
     'AUCTION': '拍卖阶段',
+    'HARBOR_MASTER': '港务长行动',
     'INVESTMENT': '投资阶段',
     'SAILING': '航行阶段',
     'SETTLEMENT': '结算阶段',

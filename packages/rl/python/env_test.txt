@@ -1,0 +1,8 @@
+﻿Starting Manila environment...
+  obs_dim=164, action_dim=288
+  Initial: player=p0, obs_shape=(164,), legal_actions=55, potential=0.0000
+  Game ended after 131 steps
+  Rewards: {'p1': 0.75, 'p2': 0.09375, 'p0': -0.75}
+  Potential range: [-0.6600, 0.6950]
+  Final potential: 0.0000 (should be 0.0)
+Done!

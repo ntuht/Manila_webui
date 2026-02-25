@@ -1,0 +1,89 @@
+﻿
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/Users/Admin/Documents/projects/Manila_webui/packages/engine[39m
+
+ [31mΓ¥»[39m __tests__/game.test.ts [2m([22m[2m26 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 31[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mcreateGame[2m > [22m3 Σ║║µ╕╕µêÅσê¥σºïσîûµ¡úτí«[32m 2[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mcreateGame[2m > [22m4 Σ║║µ╕╕µêÅσê¥σºïσîûµ¡úτí«[32m 1[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mcreateGame[2m > [22mµ»ÅΣ║║σê¥σºï 30 τÄ░ΘçæσÆî 2 ΦéíτÑ¿[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mcreateGame[2m > [22mτ¼¼Σ╕ÇΣ╕¬τÄ⌐σ«╢Σ╕ìµÿ» AI[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mcreateGame[2m > [22mpendingAction µîçσÉæτ¼¼Σ╕ÇΣ╕¬τÄ⌐σ«╢[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mAuction[2m > [22mσç║Σ╗╖σÉÄµ£ÇΘ½ÿσç║Σ╗╖µ¢┤µû░[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mAuction[2m > [22mΣ╕ñΣ║║µö╛σ╝âσÉÄτ¼¼Σ╕ëΣ║║ΦÄ╖Φâ£[32m 1[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mAuction[2m > [22mΣ╕ìσàüΦ«╕σç║Σ╗╖Σ╜ÄΣ║Äσ╜ôσëìµ£ÇΘ½ÿ[32m 1[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mAuction[2m > [22mµëÇµ£ëΣ║║µö╛σ╝âµù╢τ¼¼Σ╕ÇΣ╕¬τÄ⌐σ«╢σàìΦ┤╣µêÉΣ╕║µ╕»σèíΘò┐[32m 0[2mms[22m[39m
+[31m   [31m├ù[31m Manila Engine[2m > [22mPlacement[2m > [22mµ╕»σèíΘò┐σÅ»Σ╗ÑΦ┤¡Σ╣░ΦéíτÑ¿[39m[32m 5[2mms[22m[39m
+[31m     ΓåÆ expected undefined to be truthy[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mPlacement[2m > [22mµ╕»σèíΘò┐σÅ»Σ╗ÑΦ╖│Φ┐çΦ┤¡Σ╣░[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mPlacement[2m > [22mσ╕âτ╜«Φê╣σÅ¬Σ╜ìτ╜«∩╝êµÇ╗σÆî=9∩╝ë[32m 1[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mPlacement[2m > [22mΣ╜ìτ╜«µÇ╗σÆîΣ╕ìΣ╕║ 9 µèÑΘöÖ[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mInvestment[2m > [22mΦ┐¢σàÑµèòΦ╡äΘÿ╢µ«╡σÉÄµ£ëσÉêµ│òµèòΦ╡äΘÇëΘí╣[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mInvestment[2m > [22mµèòΦ╡äµ╕»σèíΘò┐σàêΦíîσè¿[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mInvestment[2m > [22mµëÇµ£ëτÄ⌐σ«╢µèòΦ╡äσÉÄµÄ¿Φ┐¢σê░Σ╕ïΣ╕Çµ¡Ñ[32m 1[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mInvestment[2m > [22mµèòΦ╡äµëúΘÖñΦ┤╣τö¿[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mInvestment[2m > [22mΣ┐¥ΘÖ⌐τ½ïσì│ΦÄ╖σ╛ù 10 τÄ░Θçæ[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mInvestment[2m > [22mΣ╕ìΦâ╜ΘçìσñìµèòΦ╡äσÉîΣ╕Çµº╜Σ╜ì[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mDice Roll[2m > [22mµÄ╖Θ¬░σÉÄΦê╣σÅ¬σëìΦ┐¢[32m 1[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mDice Roll[2m > [22mΦ«░σ╜òΘ¬░σ¡ÉσÄåσÅ▓[32m 1[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mSettlement[2m > [22mΣ╕ÇΦ╜«µ╕╕µêÅσÅ»Σ╗Ñσ«îµò┤Φ╖æσ«î[32m 2[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mSettlement[2m > [22mσê░µ╕»Φê╣σÅ¬τÜäΦéíΣ╗╖σó₧σèá 5[32m 1[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mSettlement[2m > [22mµÇ╗σêå = τÄ░Θçæ + ΦéíτÑ¿Σ╗╖σÇ╝ - µè╡µè╝µâ⌐τ╜Ü[32m 2[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mImmutability[2m > [22mapplyAction Σ╕ìΣ┐«µö╣σÄƒτè╢µÇü[32m 0[2mms[22m[39m
+   [32mΓ£ô[39m Manila Engine[2m > [22mMulti-round[2m > [22m3 Φ╜«µ╕╕µêÅµ¡úτí«τ╗ôµ¥ƒ[32m 6[2mms[22m[39m
+node.exe : 
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Users\Admin\AppData\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandEr 
+   ror
+ 
+[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m[1m[41m 
+Failed Tests 1 
+[49m[22m[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m
+
+[41m[1m FAIL [22m[49m 
+__tests__/game.test.ts[2m > [22mManila 
+Engine[2m > [22mPlacement[2m > 
+[22mµ╕»σèíΘò┐σÅ»Σ╗ÑΦ┤¡Σ╣░ΦéíτÑ¿
+[31m[1mAssertionError[22m: expected 
+undefined to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2mΓ¥»[22m 
+__tests__/game.test.ts:[2m189:31[22m[39m
+    [90m187| [39m                a 
+[33m=>[39m a[33m.[39mtype [33m===[39m 
+[32m'BUY_STOCK'[39m [33m&&[39m 
+a[33m.[39mdata[33m.[39mcargo 
+[33m===[39m [32m'JADE'[39m
+    [90m188| [39m            )[33m;[39m
+    [90m189| [39m            [34mexpect[39
+m(buyAction)[33m.[39m[34mtoBeTruthy[39m()
+[33m;[39m
+    [90m   | [39m                           
+   [31m^[39m
+    [90m190| [39m
+    [90m191| [39m            state 
+[33m=[39m 
+[34mapplyAction[39m(state[33m,[39m 
+buyAction[33m![39m[33m,[39m 
+rng)[33m;[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»Γ
+Ä»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/1]ΓÄ»[2
+2m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m25 passed[39m[22m[90m (26)[39m
+[2m   Start at [22m 23:20:06
+[2m   Duration [22m 441ms[2m (transform 77ms, setup 0ms, collect 81ms, tests 31ms, environment 0ms, prepare 108ms)[22m
+

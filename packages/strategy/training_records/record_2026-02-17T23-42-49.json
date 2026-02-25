@@ -1,0 +1,138 @@
+{
+  "version": "v4",
+  "timestamp": "2026-02-17T23:42:49.228Z",
+  "config": {
+    "generations": 5,
+    "population": 16,
+    "eliteFraction": 0.2,
+    "noiseStd": 0.3,
+    "gamesPerEval": 100,
+    "rounds": 3,
+    "baseSeed": 12345
+  },
+  "training": {
+    "duration_ms": 54685,
+    "bestFitness": 68.87551020408164,
+    "bestWeights": {
+      "selfEV": 1.5496501753609053,
+      "crewDilution": 0.845692513418088,
+      "insuranceDmg": 0.9073986546805634,
+      "harborDisrupt": 0.1969968107607446,
+      "shipyardBoost": 0,
+      "navDenial": 0,
+      "slotBlock": 0.5,
+      "cashPressure": 0.5,
+      "stockDamage": 0.33301376611269834,
+      "bidAggression": 0.5489251392053733,
+      "navAttackBias": 0,
+      "riskTolerance": 0.5225865531914977
+    },
+    "history": [
+      {
+        "gen": 1,
+        "best": 78.19,
+        "avg": 39.09
+      },
+      {
+        "gen": 2,
+        "best": 63.6,
+        "avg": 51.39
+      },
+      {
+        "gen": 3,
+        "best": 60.13,
+        "avg": 45.07
+      },
+      {
+        "gen": 4,
+        "best": 66.74,
+        "avg": 56.26
+      },
+      {
+        "gen": 5,
+        "best": 68.88,
+        "avg": 48.82
+      }
+    ]
+  },
+  "validation": [
+    {
+      "name": "训练策略 vs 2 × 期望值",
+      "completed": 459,
+      "failed": 41,
+      "total": 500,
+      "strategies": [
+        {
+          "name": "trained",
+          "winRate": 38.1,
+          "avgScore": 65,
+          "wins": 175
+        },
+        {
+          "name": "expected-value",
+          "winRate": 22.7,
+          "avgScore": 56.7,
+          "wins": 104
+        },
+        {
+          "name": "expected-value",
+          "winRate": 39.2,
+          "avgScore": 64.1,
+          "wins": 180
+        }
+      ]
+    },
+    {
+      "name": "训练策略 vs 对抗性 vs 贪婪",
+      "completed": 406,
+      "failed": 94,
+      "total": 500,
+      "strategies": [
+        {
+          "name": "trained",
+          "winRate": 51.7,
+          "avgScore": 76.1,
+          "wins": 210
+        },
+        {
+          "name": "adversarial",
+          "winRate": 42.1,
+          "avgScore": 72.1,
+          "wins": 171
+        },
+        {
+          "name": "greedy",
+          "winRate": 6.2,
+          "avgScore": 49,
+          "wins": 25
+        }
+      ]
+    },
+    {
+      "name": "训练策略 vs 对抗性 vs 期望值",
+      "completed": 456,
+      "failed": 44,
+      "total": 500,
+      "strategies": [
+        {
+          "name": "trained",
+          "winRate": 54.2,
+          "avgScore": 69.9,
+          "wins": 247
+        },
+        {
+          "name": "adversarial",
+          "winRate": 22.6,
+          "avgScore": 61.1,
+          "wins": 103
+        },
+        {
+          "name": "expected-value",
+          "winRate": 23.2,
+          "avgScore": 58.6,
+          "wins": 106
+        }
+      ]
+    }
+  ]
+}

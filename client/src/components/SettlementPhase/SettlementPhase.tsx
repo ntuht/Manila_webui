@@ -1,139 +1,162 @@
 import React from 'react';
 import { useGameStore } from '../../stores';
-import { Card } from '../Shared/Card';
-import { Button } from '../Shared/Button';
+
+const CARGO_NAMES: Record<string, string> = {
+  JADE: '翡翠',
+  SILK: '丝绸',
+  GINSENG: '人参',
+  NUTMEG: '肉豆蔻',
+};
+const CARGO_COLORS: Record<string, string> = {
+  JADE: '#22c55e',
+  SILK: '#ef4444',
+  GINSENG: '#a855f7',
+  NUTMEG: '#f59e0b',
+};
 
 export const SettlementPhase: React.FC = () => {
-  const { gameState, nextPhase } = useGameStore();
+  const { gameState, getEngineState } = useGameStore();
+  const engineState = getEngineState();
+  const summary = engineState?.settlementSummary;
 
-  if (!gameState) return null;
+  if (!gameState || !engineState) return null;
 
-  const dockedShips = gameState.ships.filter(ship => ship.isDocked);
-  const shipyardShips = gameState.ships.filter(ship => ship.isInShipyard);
-  const hijackedShips = gameState.ships.filter(ship => ship.isHijacked);
-
-  const getCargoName = (cargoType: string): string => {
-    const names = {
-      'JADE': '翡翠',
-      'SILK': '丝绸',
-      'GINSENG': '人参',
-      'NUTMEG': '肉豆蔻'
-    };
-    return names[cargoType as keyof typeof names] || cargoType;
+  const dispatchAcknowledge = () => {
+    const pa = engineState.pendingAction;
+    if (pa && pa.validActions.length > 0) {
+      useGameStore.getState().dispatchAction(pa.validActions[0]);
+    }
   };
 
-  const getCargoColor = (cargoType: string): string => {
-    const colors = {
-      'JADE': 'bg-cargo-jade',
-      'SILK': 'bg-cargo-silk',
-      'GINSENG': 'bg-cargo-ginseng',
-      'NUTMEG': 'bg-cargo-nutmeg'
-    };
-    return colors[cargoType as keyof typeof colors] || 'bg-gray-500';
-  };
+  const isGameEnding = summary?.anyStockMaxed || summary?.isLastRound;
+
+  // 获取每艘船的最终位置信息
+  const ships = engineState.ships || [];
 
   return (
-    <div className="space-y-6">
-      <Card title="结算阶段" className="p-6">
-        <div className="space-y-6">
-          {/* 船只状态总结 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <h4 className="font-semibold text-green-800 mb-2">到港船只</h4>
-              <div className="space-y-2">
-                {dockedShips.length > 0 ? (
-                  dockedShips.map(ship => (
-                    <div key={ship.id} className="flex items-center space-x-2">
-                      <div className={`w-4 h-4 rounded-full ${getCargoColor(ship.cargoType)}`}></div>
-                      <span className="text-sm">{getCargoName(ship.cargoType)}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-500">无船只到港</p>
-                )}
-              </div>
-            </div>
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 50,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      backdropFilter: 'blur(4px)',
+    }}>
+      <div style={{
+        background: 'white', borderRadius: 16, padding: 32,
+        maxWidth: 640, width: '90%',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+        maxHeight: '85vh', overflowY: 'auto',
+      }}>
+        <h2 style={{ textAlign: 'center', fontSize: 22, fontWeight: 700, marginBottom: 24 }}>
+          ⚓ 第 {engineState.round} 轮结算
+        </h2>
 
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-              <h4 className="font-semibold text-orange-800 mb-2">修船厂船只</h4>
-              <div className="space-y-2">
-                {shipyardShips.length > 0 ? (
-                  shipyardShips.map(ship => (
-                    <div key={ship.id} className="flex items-center space-x-2">
-                      <div className={`w-4 h-4 rounded-full ${getCargoColor(ship.cargoType)}`}></div>
-                      <span className="text-sm">{getCargoName(ship.cargoType)}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-500">无船只进厂</p>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <h4 className="font-semibold text-red-800 mb-2">被劫持船只</h4>
-              <div className="space-y-2">
-                {hijackedShips.length > 0 ? (
-                  hijackedShips.map(ship => (
-                    <div key={ship.id} className="flex items-center space-x-2">
-                      <div className={`w-4 h-4 rounded-full ${getCargoColor(ship.cargoType)}`}></div>
-                      <span className="text-sm">{getCargoName(ship.cargoType)}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-500">无船只被劫持</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* 股价变化 */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-3">股价变化</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {(['JADE', 'SILK', 'GINSENG', 'NUTMEG'] as const).map(cargoType => {
-                const ship = gameState.ships.find(s => s.cargoType === cargoType);
-                const priceChange = ship?.isDocked ? '+1' : ship?.isInShipyard ? '-1' : '0';
-                const changeColor = ship?.isDocked ? 'text-green-600' : ship?.isInShipyard ? 'text-red-600' : 'text-gray-600';
-                
-                return (
-                  <div key={cargoType} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-4 h-4 rounded-full ${getCargoColor(cargoType)}`}></div>
-                      <span className="text-sm font-medium">{getCargoName(cargoType)}</span>
-                    </div>
-                    <span className={`text-sm font-bold ${changeColor}`}>
-                      {priceChange}
-                    </span>
+        {/* 船只状态 - 带位置 */}
+        <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+          <h4 style={{ fontWeight: 600, color: '#334155', marginBottom: 10, fontSize: 14 }}>🚢 船只最终位置</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {ships.map((ship: { cargo: string; position: number }, i: number) => {
+              const isDocked = ship.position >= 14;
+              const isAt13 = ship.position === 13;
+              let statusIcon = '🔧';
+              let statusText = `修船厂 (位置${ship.position})`;
+              let bgColor = '#fef3c7';
+              let borderColor = '#fde68a';
+              let textColor = '#92400e';
+              if (isDocked) {
+                statusIcon = '✅';
+                statusText = `到港 (位置${ship.position})`;
+                bgColor = '#dcfce7';
+                borderColor = '#bbf7d0';
+                textColor = '#166534';
+              } else if (isAt13) {
+                statusIcon = '☠️';
+                statusText = `海盗区 (位置${ship.position})`;
+                bgColor = '#fee2e2';
+                borderColor = '#fecaca';
+                textColor = '#991b1b';
+              }
+              return (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  background: bgColor, border: `1px solid ${borderColor}`, borderRadius: 8, padding: '8px 12px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{
+                      background: CARGO_COLORS[ship.cargo] || '#888', color: 'white',
+                      padding: '2px 10px', borderRadius: 99, fontSize: 13, fontWeight: 500,
+                    }}>{CARGO_NAMES[ship.cargo] || ship.cargo}</span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 玩家收益总结 */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h4 className="font-semibold text-yellow-800 mb-3">玩家收益总结</h4>
-            <div className="space-y-2">
-              {gameState.players.map(player => (
-                <div key={player.id} className="flex items-center justify-between">
-                  <span className="font-medium">{player.name}</span>
-                  <span className="text-sm text-gray-600">
-                    现金: {player.cash}
+                  <span style={{ fontSize: 13, fontWeight: 500, color: textColor }}>
+                    {statusIcon} {statusText}
                   </span>
                 </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 股价变化 */}
+        {(summary?.stockPriceChanges ?? []).length > 0 && (
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: 14, marginBottom: 16 }}>
+            <h4 style={{ fontWeight: 600, color: '#1e40af', marginBottom: 8, fontSize: 14 }}>📈 股价变化</h4>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+              {summary!.stockPriceChanges.map((change: { cargo: string; from: number; to: number }, i: number) => (
+                <span key={i} style={{ fontSize: 14 }}>
+                  <span style={{ color: CARGO_COLORS[change.cargo] || '#888', fontWeight: 600 }}>
+                    {CARGO_NAMES[change.cargo] || change.cargo}
+                  </span>{' '}
+                  {change.from} → <strong>{change.to}</strong>
+                </span>
               ))}
             </div>
           </div>
+        )}
 
-          {/* 操作按钮 */}
-          <div className="flex justify-center">
-            <Button onClick={nextPhase} className="px-8 py-3">
-              {gameState.round >= gameState.gameConfig.rounds ? '结束游戏' : '下一轮'}
-            </Button>
+        {/* 玩家资产 */}
+        <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 12, padding: 14, marginBottom: 24 }}>
+          <h4 style={{ fontWeight: 600, color: '#374151', marginBottom: 10, fontSize: 14 }}>👤 玩家资产</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {engineState.players.map((player: { id: string; name: string; cash: number; isAI: boolean; stocks: Array<{ cargo: string; quantity: number; mortgaged: number }> }) => {
+              const stockInfo = player.stocks
+                .filter(st => st.quantity > 0)
+                .map(st =>
+                  `${CARGO_NAMES[st.cargo] || st.cargo}×${st.quantity}${st.mortgaged > 0 ? `(抵${st.mortgaged})` : ''}`
+                ).join(', ');
+              return (
+                <div key={player.id} style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '4px 8px', borderRadius: 6,
+                  background: player.isAI ? 'transparent' : '#e0f2fe',
+                }}>
+                  <span style={{ fontWeight: 500, fontSize: 14 }}>
+                    {player.isAI ? '🤖' : '👤'} {player.name}
+                  </span>
+                  <span style={{ fontSize: 13, color: '#555' }}>
+                    💰{player.cash} {stockInfo && `| 📊${stockInfo}`}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
-      </Card>
+
+        {/* 按钮 */}
+        <div style={{ textAlign: 'center' }}>
+          <button
+            onClick={dispatchAcknowledge}
+            style={{
+              background: isGameEnding ? '#dc2626' : '#2563eb',
+              color: 'white', border: 'none', borderRadius: 10,
+              padding: '12px 40px', fontSize: 16, fontWeight: 600,
+              cursor: 'pointer', transition: 'all 0.2s',
+            }}
+            onMouseOver={e => (e.currentTarget.style.opacity = '0.85')}
+            onMouseOut={e => (e.currentTarget.style.opacity = '1')}
+          >
+            {isGameEnding ? '🏁 查看最终结果' : '➡️ 进入下一轮'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

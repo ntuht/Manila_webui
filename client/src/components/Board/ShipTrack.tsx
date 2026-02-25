@@ -7,11 +7,11 @@ interface ShipTrackProps {
 
 export const ShipTrack: React.FC<ShipTrackProps> = ({ ship }) => {
   const positions = Array.from({ length: 14 }, (_, i) => i); // 0-13 是轨道位置
-  
+
   const getCargoColor = (cargoType: CargoType): string => {
     const colors = {
       'JADE': 'bg-cargo-jade',
-      'SILK': 'bg-cargo-silk', 
+      'SILK': 'bg-cargo-silk',
       'GINSENG': 'bg-cargo-ginseng',
       'NUTMEG': 'bg-cargo-nutmeg'
     };
@@ -22,10 +22,18 @@ export const ShipTrack: React.FC<ShipTrackProps> = ({ ship }) => {
     const names = {
       'JADE': '翡翠',
       'SILK': '丝绸',
-      'GINSENG': '人参', 
+      'GINSENG': '人参',
       'NUTMEG': '肉豆蔻'
     };
     return names[cargoType] || cargoType;
+  };
+
+  // 航行中不显示"修船厂"，只在结算后显示
+  const getStatusLabel = () => {
+    if (ship.isDocked) return <span className="text-green-600 font-medium">✅ 已到港</span>;
+    if (ship.isInShipyard) return <span className="text-orange-600 font-medium">🔧 修船厂</span>;
+    if (ship.isHijacked) return <span className="text-red-600 font-medium">☠️ 被劫持</span>;
+    return <span className="text-blue-600 font-medium">🚢 航行中</span>;
   };
 
   return (
@@ -37,51 +45,48 @@ export const ShipTrack: React.FC<ShipTrackProps> = ({ ship }) => {
         </div>
         <div className="flex items-center space-x-4 text-sm text-gray-600">
           <span>位置: {ship.position}</span>
-          {ship.isDocked && <span className="text-green-600 font-medium">已到港</span>}
-          {ship.isInShipyard && <span className="text-orange-600 font-medium">修船厂</span>}
-          {ship.isHijacked && <span className="text-red-600 font-medium">被劫持</span>}
+          {getStatusLabel()}
         </div>
       </div>
-      
+
       {/* 轨道 */}
       <div className="relative">
         <div className="flex justify-between items-center">
           {positions.map(pos => (
             <div
               key={pos}
-              className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-medium transition-all ${
-                pos === ship.position
+              className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-medium transition-all ${pos === ship.position
                   ? 'bg-yellow-400 border-yellow-600 text-yellow-900 scale-110'
                   : pos < ship.position
-                  ? 'bg-blue-200 border-blue-400 text-blue-800'
-                  : 'bg-gray-100 border-gray-300 text-gray-600'
-              }`}
+                    ? 'bg-blue-200 border-blue-400 text-blue-800'
+                    : 'bg-gray-100 border-gray-300 text-gray-600'
+                }`}
             >
               {pos}
             </div>
           ))}
-          
+
           {/* 港口位置（位置14） */}
           <div className="ml-4">
             <div
-              className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-medium transition-all ${
-                ship.position >= 14
+              className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-medium transition-all ${ship.position >= 14
                   ? 'bg-green-400 border-green-600 text-green-900 scale-110'
                   : 'bg-gray-100 border-gray-300 text-gray-600'
-              }`}
+                }`}
             >
               港
             </div>
           </div>
         </div>
-        
-        {/* 特殊位置标记 */}
-        <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
+
+        {/* 特殊位置标记 — 位置13是海盗区 */}
+        <div className="flex items-center mt-2 text-xs text-gray-500">
           <span>起点</span>
-          <span className="text-red-600 font-medium">海盗位置</span>
+          <span className="flex-1"></span>
+          <span className="text-red-600 font-medium" style={{ marginRight: '2.5rem' }}>☠ 13=海盗区</span>
           <span className="text-green-600 font-medium">港口</span>
         </div>
-        
+
         {/* 船员信息 */}
         {ship.crew.length > 0 && (
           <div className="mt-4">

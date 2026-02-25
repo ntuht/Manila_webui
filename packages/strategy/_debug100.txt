@@ -1,0 +1,92 @@
+﻿node.exe : C:\Users\Admin\Documents\projects\Manila_webui\node_modules\tsx\d
+ist\register-D46fvsV_.cjs:3
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Users\Admin\AppData\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\Admin\...-D46fvsV_.cj 
+   s:3:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+`)},"createLog"),x=I(g.bgLightYellow(g.black(" CJS "))),ae=I(g.bgBlue(" ESM 
+")),oe=[".cts",".mts",".ts",".tsx",".jsx"],ie=[".js",".cjs",".mjs"],k=[".ts"
+,".tsx",".jsx"],F=o((s,e,r,n)=>{const t=Object.getOwnPropertyDescriptor(s,e)
+;t?.set?s[e]=r:(!t||t.configurable)&&Object.defineProperty(s,e,{value:r,enum
+erable:t?.enumerable||n?.enumerable,writable:n?.writable??(t?t.writable:!0),
+configurable:n?.configurable??(t?t.configurable:!0)})},"safeSet"),ce=o((s,e,
+r)=>{const n=e[".js"],t=o((a,i)=>{if(s.enabled===!1)return 
+n(a,i);const[c,f]=i.split("?");if((new 
+URLSearchParams(f).get("namespace")??void 0)!==r)return n(a,i);x(2,"load",{f
+ilePath:i}),a.id.startsWith("data:text/javascript,")&&(a.path=m.dirname(c)),
+R.parent?.send&&R.parent.send({type:"dependency",path:c});const 
+p=oe.some(h=>c.endsWith(h)),P=ie.some(h=>c.endsWith(h));if(!p&&!P)return 
+n(a,c);let d=O.readFileSync(c,"utf8");if(c.endsWith(".cjs")){const 
+h=w.transformDynamicImport(i,d);h&&(d=A()?$(h):h.code)}else 
+if(p||w.isESM(d)){const h=w.transformSync(d,i,{tsconfigRaw:exports.fileMatch
+er?.(c)});d=A()?$(h):h.code}x(1,"loaded",{filePath:c}),a._compile(d,c)},"tra
+nsformer");F(e,".js",t);for(const a of 
+k)F(e,a,t,{enumerable:!r,writable:!0,configurable:!0});return F(e,".mjs",t,{
+writable:!0,configurable:!0}),()=>{e[".js"]===t&&(e[".js"]=n);for(const a 
+of[...k,".mjs"])e[a]===t&&delete e[a]}},"createExtensions"),le=o(s=>e=>{if((
+e==="."||e===".."||e.endsWith("/.."))&&(e+="/"),_.test(e)){let 
+r=m.join(e,"index.js");e.startsWith("./")&&(r=`./${r}`);try{return 
+s(r)}catch{}}try{return s(e)}catch(r){const 
+n=r;if(n.code==="MODULE_NOT_FOUND")try{return 
+s(`${e}${m.sep}index.js`)}catch{}throw n}},"createImplicitResolver"),B=[".js
+",".json"],G=[".ts",".tsx",".jsx"],fe=[...G,...B],he=[...B,...G],y=Object.cr
+eate(null);y[".js"]=[".ts",".tsx",".js",".jsx"],y[".jsx"]=[".tsx",".ts",".js
+x",".js"],y[".cjs"]=[".cts"],y[".mjs"]=[".mts"];const X=o(s=>{const e=s.spli
+t("?"),r=e[1]?`?${e[1]}`:"",[n]=e,t=m.extname(n),a=[],i=y[t];if(i){const 
+f=n.slice(0,-t.length);a.push(...i.map(l=>f+l+r))}const c=!(s.startsWith(v)|
+|j(n))||n.includes(J)||n.includes("/node_modules/")?he:fe;return a.push(...c
+.map(f=>n+f+r)),a},"mapTsExtensions"),S=o((s,e,r)=>{if(x(3,"resolveTsFilenam
+e",{request:e,isDirectory:_.test(e),isTsParent:r,allowJs:exports.allowJs}),_
+.test(e)||!r&&!exports.allowJs)return;const n=X(e);if(n)for(const t of 
+n)try{return s(t)}catch(a){const{code:i}=a;if(i!=="MODULE_NOT_FOUND"&&i!=="E
+RR_PACKAGE_PATH_NOT_EXPORTED")throw a}},"resolveTsFilename"),me=o((s,e)=>r=>
+{if(x(3,"resolveTsFilename",{request:r,isTsParent:e,isFilePath:j(r)}),j(r)){
+const n=S(s,r,e);if(n)return n}try{return s(r)}catch(n){const 
+t=n;if(t.code==="MODULE_NOT_FOUND"){if(t.path){const 
+i=t.message.match(/^Cannot find module '([^']+)'$/);if(i){const 
+f=i[1],l=S(s,f,e);if(l)return l}const c=t.message.match(/^Cannot find 
+module '([^']+)'. Please verify that the package.json has a valid "main" 
+entry$/);if(c){const f=c[1],l=S(s,f,e);if(l)return l}}const 
+a=S(s,r,e);if(a)return a}throw t}},"createTsExtensionResolver"),z="at 
+cjsPreparseModuleExports (node:internal",de=o(s=>{const e=s.stack.split(`
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                
+
+Error: Cannot find module 'C:\Users\Admin\Documents\projects\Manila_webui\no
+de_modules\@manila\engine\dist\index.js'
+    at createEsmNotFoundErr (node:internal/modules/cjs/loader:1419:15)
+    at finalizeEsmResolution (node:internal/modules/cjs/loader:1408:15)
+    at resolveExports (node:internal/modules/cjs/loader:650:14)
+    at Function._findPath (node:internal/modules/cjs/loader:717:31)
+    at node:internal/modules/cjs/loader:1369:27
+    at nextResolveSimple (C:\Users\Admin\Documents\projects\Manila_webui\nod
+e_modules\tsx\dist\register-D46fvsV_.cjs:4:1004)
+    at C:\Users\Admin\Documents\projects\Manila_webui\node_modules\tsx\dist\
+register-D46fvsV_.cjs:3:2630
+    at C:\Users\Admin\Documents\projects\Manila_webui\node_modules\tsx\dist\
+register-D46fvsV_.cjs:3:1542
+    at resolveTsPaths (C:\Users\Admin\Documents\projects\Manila_webui\node_m
+odules\tsx\dist\register-D46fvsV_.cjs:4:760)
+    at C:\Users\Admin\Documents\projects\Manila_webui\node_modules\tsx\dist\
+register-D46fvsV_.cjs:4:1102 {
+  code: 'MODULE_NOT_FOUND',
+  path: 'C:\\Users\\Admin\\Documents\\projects\\Manila_webui\\node_modules\\
+@manila\\engine'
+}
+
+Node.js v22.20.0

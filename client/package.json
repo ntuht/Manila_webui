@@ -14,7 +14,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@manila/engine": "file:../packages/engine",
+    "@manila/rl": "file:../packages/rl",
     "framer-motion": "^12.23.24",
+    "onnxruntime-web": "^1.24.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "zustand": "^5.0.8"

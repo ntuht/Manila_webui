@@ -1,0 +1,401 @@
+
+════════════════════════════════════════════════════════════
+  Manila 对局复盘 — Seed #42
+════════════════════════════════════════════════════════════
+  策略: P0=trained vs P1=expected-value vs P2=expected-value
+
+
+════════════════════════════════════════════════════════════
+  第 1 轮
+════════════════════════════════════════════════════════════
+  玩家状态:
+    🟢 P0 (trained): 💰30 | 📊股票 [SILK×1, JADE×1]
+    🔵 P1 (expected-value): 💰30 | 📊股票 [GINSENG×1, JADE×1]
+    🟠 P2 (expected-value): 💰30 | 📊股票 [SILK×1, JADE×1]
+
+  📯 拍卖阶段 — 竞争港务长
+    🟢 P0 (trained): 出价 1
+    🔵 P1 (expected-value): 出价 2
+    🟠 P2 (expected-value): 出价 3
+    🟢 P0 (trained): 出价 4
+    🔵 P1 (expected-value): 出价 5
+    🟠 P2 (expected-value): 出价 6
+    🟢 P0 (trained): 放弃竞拍
+    🔵 P1 (expected-value): 出价 7
+    🟠 P2 (expected-value): 出价 8
+    🔵 P1 (expected-value): 放弃竞拍
+
+  ⚓ 放置船只阶段
+    🟠 P2 (expected-value): 📈 买入 JADE 股票 (价格5)
+    🟠 P2 (expected-value): 放置船只: {"JADE":4,"SILK":3,"NUTMEG":2,"GINSENG":0}
+
+  💰 投资阶段 (第 1 步)
+    🟠 P2 (expected-value): 🚢 投资船员 🟩翡翠 座位0 (花费3)
+       备选项: crew-JADE-1(4), crew-JADE-2(5), crew-JADE-3(5)...
+    🟢 P0 (trained): 🚢 投资船员 🟩翡翠 座位1 (花费4)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-0(3)...
+    🔵 P1 (expected-value): 🚢 投资船员 🟪丝绸 座位0 (花费3)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-1(4)...
+    🟠 P2 (expected-value): 🚢 投资船员 🟧肉豆蔻 座位0 (花费2)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-1(4)...
+    🟢 P0 (trained): 🚢 投资船员 🟪丝绸 座位1 (花费4)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-2(5)...
+    🔵 P1 (expected-value): 🚢 投资船员 🟩翡翠 座位2 (花费5)
+       备选项: crew-JADE-3(5), crew-SILK-2(5), crew-NUTMEG-1(3)...
+
+  当前投资:
+    crew-JADE-0: 🟠 P2 (expected-value)
+    crew-JADE-1: 🟢 P0 (trained)
+    crew-SILK-0: 🔵 P1 (expected-value)
+    crew-NUTMEG-0: 🟠 P2 (expected-value)
+    crew-SILK-1: 🟢 P0 (trained)
+    crew-JADE-2: 🔵 P1 (expected-value)
+  船只状态:
+    🟩翡翠 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p2,p0,p1]
+    🟪丝绸 [▓▓▓░░░░░░░░░░░] 位置3/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓░░░░░░░░░░░░] 位置2/14 [船员: p2]
+
+  ⛵ 航行阶段
+  船只状态:
+    🟩翡翠 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p2,p0,p1]
+    🟪丝绸 [▓▓▓░░░░░░░░░░░] 位置3/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓░░░░░░░░░░░░] 位置2/14 [船员: p2]
+    🎲 掷骰: [6, 4, 2] = 12
+       🟩翡翠 → 位置10
+       🟪丝绸 → 位置7
+       🟧肉豆蔻 → 位置4
+
+  💰 投资阶段 (第 4 步)
+    🟠 P2 (expected-value): 🚢 投资船员 🟩翡翠 座位3 (花费5)
+       备选项: crew-SILK-2(5), crew-NUTMEG-1(3), crew-NUTMEG-2(4)...
+    🟢 P0 (trained): 🔧 投资修船厂 shipyard-A (花费4)
+       备选项: crew-SILK-2(5), crew-NUTMEG-1(3), crew-NUTMEG-2(4)...
+    🔵 P1 (expected-value): 🏢 投资港口办事处 harbor-A (花费4)
+       备选项: crew-SILK-2(5), crew-NUTMEG-1(3), crew-NUTMEG-2(4)...
+
+  当前投资:
+    crew-JADE-0: 🟠 P2 (expected-value)
+    crew-JADE-1: 🟢 P0 (trained)
+    crew-SILK-0: 🔵 P1 (expected-value)
+    crew-NUTMEG-0: 🟠 P2 (expected-value)
+    crew-SILK-1: 🟢 P0 (trained)
+    crew-JADE-2: 🔵 P1 (expected-value)
+    crew-JADE-3: 🟠 P2 (expected-value)
+    shipyard-A: 🟢 P0 (trained)
+    harbor-A: 🔵 P1 (expected-value)
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓▓░░░░] 位置10/14 [船员: p2,p0,p1,p2]
+    🟪丝绸 [▓▓▓▓▓▓▓░░░░░░░] 位置7/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p2]
+
+  ⛵ 航行阶段
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓▓░░░░] 位置10/14 [船员: p2,p0,p1,p2]
+    🟪丝绸 [▓▓▓▓▓▓▓░░░░░░░] 位置7/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p2]
+    🎲 掷骰: [4, 2, 6] = 12
+       🟩翡翠 → 位置14 ✅
+       🟪丝绸 → 位置9
+       🟧肉豆蔻 → 位置10
+
+  💰 投资阶段 (第 6 步)
+    🟠 P2 (expected-value): 🚢 投资船员 🟧肉豆蔻 座位1 (花费3)
+       备选项: crew-SILK-2(5), crew-NUTMEG-2(4), harbor-B(3)...
+    🟢 P0 (trained): 🚢 投资船员 🟧肉豆蔻 座位2 (花费4)
+       备选项: crew-SILK-2(5), harbor-B(3), harbor-C(2)...
+    🔵 P1 (expected-value): 🏢 投资港口办事处 harbor-B (花费3)
+       备选项: crew-SILK-2(5), harbor-C(2), shipyard-B(3)...
+
+  当前投资:
+    crew-JADE-0: 🟠 P2 (expected-value)
+    crew-JADE-1: 🟢 P0 (trained)
+    crew-SILK-0: 🔵 P1 (expected-value)
+    crew-NUTMEG-0: 🟠 P2 (expected-value)
+    crew-SILK-1: 🟢 P0 (trained)
+    crew-JADE-2: 🔵 P1 (expected-value)
+    crew-JADE-3: 🟠 P2 (expected-value)
+    shipyard-A: 🟢 P0 (trained)
+    harbor-A: 🔵 P1 (expected-value)
+    crew-NUTMEG-1: 🟠 P2 (expected-value)
+    crew-NUTMEG-2: 🟢 P0 (trained)
+    harbor-B: 🔵 P1 (expected-value)
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 位置14/14 ✅到港 [船员: p2,p0,p1,p2]
+    🟪丝绸 [▓▓▓▓▓▓▓▓▓░░░░░] 位置9/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓▓▓▓▓▓▓▓▓░░░░] 位置10/14 [船员: p2,p2,p0]
+
+  ⛵ 航行阶段
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 位置14/14 ✅到港 [船员: p2,p0,p1,p2]
+    🟪丝绸 [▓▓▓▓▓▓▓▓▓░░░░░] 位置9/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓▓▓▓▓▓▓▓▓░░░░] 位置10/14 [船员: p2,p2,p0]
+
+════════════════════════════════════════════════════════════
+  第 2 轮
+════════════════════════════════════════════════════════════
+  玩家状态:
+    🟢 P0 (trained): 💰37 | 📊股票 [SILK×1, JADE×1]
+    🔵 P1 (expected-value): 💰38 | 📊股票 [GINSENG×1, JADE×1]
+    🟠 P2 (expected-value): 💰38 | 📊股票 [SILK×1, JADE×2]
+
+  📯 拍卖阶段 — 竞争港务长
+    🟢 P0 (trained): 出价 1
+    🔵 P1 (expected-value): 出价 2
+    🟠 P2 (expected-value): 出价 3
+    🟢 P0 (trained): 出价 4
+    🔵 P1 (expected-value): 出价 5
+    🟠 P2 (expected-value): 出价 6
+    🟢 P0 (trained): 放弃竞拍
+    🔵 P1 (expected-value): 出价 7
+    🟠 P2 (expected-value): 出价 8
+    🔵 P1 (expected-value): 放弃竞拍
+
+  ⚓ 放置船只阶段
+    🟠 P2 (expected-value): 📈 买入 JADE 股票 (价格5)
+    🟠 P2 (expected-value): 放置船只: {"JADE":4,"SILK":3,"NUTMEG":2,"GINSENG":0}
+
+  💰 投资阶段 (第 1 步)
+    🟠 P2 (expected-value): 🚢 投资船员 🟩翡翠 座位0 (花费3)
+       备选项: crew-JADE-1(4), crew-JADE-2(5), crew-JADE-3(5)...
+    🟢 P0 (trained): 🚢 投资船员 🟩翡翠 座位1 (花费4)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-0(3)...
+    🔵 P1 (expected-value): 🚢 投资船员 🟪丝绸 座位0 (花费3)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-1(4)...
+    🟠 P2 (expected-value): 🚢 投资船员 🟧肉豆蔻 座位0 (花费2)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-1(4)...
+    🟢 P0 (trained): 🚢 投资船员 🟪丝绸 座位1 (花费4)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-2(5)...
+    🔵 P1 (expected-value): 🚢 投资船员 🟩翡翠 座位2 (花费5)
+       备选项: crew-JADE-3(5), crew-SILK-2(5), crew-NUTMEG-1(3)...
+
+  当前投资:
+    crew-JADE-0: 🟠 P2 (expected-value)
+    crew-JADE-1: 🟢 P0 (trained)
+    crew-SILK-0: 🔵 P1 (expected-value)
+    crew-NUTMEG-0: 🟠 P2 (expected-value)
+    crew-SILK-1: 🟢 P0 (trained)
+    crew-JADE-2: 🔵 P1 (expected-value)
+  船只状态:
+    🟩翡翠 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p2,p0,p1]
+    🟪丝绸 [▓▓▓░░░░░░░░░░░] 位置3/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓░░░░░░░░░░░░] 位置2/14 [船员: p2]
+
+  ⛵ 航行阶段
+  船只状态:
+    🟩翡翠 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p2,p0,p1]
+    🟪丝绸 [▓▓▓░░░░░░░░░░░] 位置3/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓░░░░░░░░░░░░] 位置2/14 [船员: p2]
+    🎲 掷骰: [3, 1, 1] = 5
+       🟩翡翠 → 位置7
+       🟪丝绸 → 位置4
+       🟧肉豆蔻 → 位置3
+
+  💰 投资阶段 (第 4 步)
+    🟠 P2 (expected-value): 🔧 投资修船厂 shipyard-B (花费3)
+       备选项: crew-JADE-3(5), crew-SILK-2(5), crew-NUTMEG-1(3)...
+    🟢 P0 (trained): 🔧 投资修船厂 shipyard-C (花费2)
+       备选项: crew-JADE-3(5), crew-SILK-2(5), crew-NUTMEG-1(3)...
+    🔵 P1 (expected-value): 🔧 投资修船厂 shipyard-A (花费4)
+       备选项: crew-JADE-3(5), crew-SILK-2(5), crew-NUTMEG-1(3)...
+
+  当前投资:
+    crew-JADE-0: 🟠 P2 (expected-value)
+    crew-JADE-1: 🟢 P0 (trained)
+    crew-SILK-0: 🔵 P1 (expected-value)
+    crew-NUTMEG-0: 🟠 P2 (expected-value)
+    crew-SILK-1: 🟢 P0 (trained)
+    crew-JADE-2: 🔵 P1 (expected-value)
+    shipyard-B: 🟠 P2 (expected-value)
+    shipyard-C: 🟢 P0 (trained)
+    shipyard-A: 🔵 P1 (expected-value)
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓░░░░░░░] 位置7/14 [船员: p2,p0,p1]
+    🟪丝绸 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓▓░░░░░░░░░░░] 位置3/14 [船员: p2]
+
+  ⛵ 航行阶段
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓░░░░░░░] 位置7/14 [船员: p2,p0,p1]
+    🟪丝绸 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓▓░░░░░░░░░░░] 位置3/14 [船员: p2]
+    🎲 掷骰: [4, 5, 6] = 15
+       🟩翡翠 → 位置11
+       🟪丝绸 → 位置9
+       🟧肉豆蔻 → 位置9
+
+  💰 投资阶段 (第 6 步)
+    🟠 P2 (expected-value): 🚢 投资船员 🟩翡翠 座位3 (花费5)
+       备选项: crew-SILK-2(5), crew-NUTMEG-1(3), crew-NUTMEG-2(4)...
+    🟢 P0 (trained): 🚢 投资船员 🟧肉豆蔻 座位1 (花费3)
+       备选项: crew-SILK-2(5), crew-NUTMEG-2(4), harbor-A(4)...
+    🔵 P1 (expected-value): 🏢 投资港口办事处 harbor-A (花费4)
+       备选项: crew-SILK-2(5), crew-NUTMEG-2(4), harbor-B(3)...
+
+  当前投资:
+    crew-JADE-0: 🟠 P2 (expected-value)
+    crew-JADE-1: 🟢 P0 (trained)
+    crew-SILK-0: 🔵 P1 (expected-value)
+    crew-NUTMEG-0: 🟠 P2 (expected-value)
+    crew-SILK-1: 🟢 P0 (trained)
+    crew-JADE-2: 🔵 P1 (expected-value)
+    shipyard-B: 🟠 P2 (expected-value)
+    shipyard-C: 🟢 P0 (trained)
+    shipyard-A: 🔵 P1 (expected-value)
+    crew-JADE-3: 🟠 P2 (expected-value)
+    crew-NUTMEG-1: 🟢 P0 (trained)
+    harbor-A: 🔵 P1 (expected-value)
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓▓▓░░░] 位置11/14 [船员: p2,p0,p1,p2]
+    🟪丝绸 [▓▓▓▓▓▓▓▓▓░░░░░] 位置9/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓▓▓▓▓▓▓▓░░░░░] 位置9/14 [船员: p2,p0]
+
+  ⛵ 航行阶段
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓▓▓░░░] 位置11/14 [船员: p2,p0,p1,p2]
+    🟪丝绸 [▓▓▓▓▓▓▓▓▓░░░░░] 位置9/14 [船员: p1,p0]
+    🟧肉豆蔻 [▓▓▓▓▓▓▓▓▓░░░░░] 位置9/14 [船员: p2,p0]
+
+════════════════════════════════════════════════════════════
+  第 3 轮
+════════════════════════════════════════════════════════════
+  玩家状态:
+    🟢 P0 (trained): 💰33 | 📊股票 [SILK×1, JADE×1]
+    🔵 P1 (expected-value): 💰43 | 📊股票 [GINSENG×1, JADE×1]
+    🟠 P2 (expected-value): 💰38 | 📊股票 [SILK×1, JADE×3]
+
+  📯 拍卖阶段 — 竞争港务长
+    🟢 P0 (trained): 出价 1
+    🔵 P1 (expected-value): 出价 2
+    🟠 P2 (expected-value): 出价 3
+    🟢 P0 (trained): 放弃竞拍
+    🔵 P1 (expected-value): 出价 4
+    🟠 P2 (expected-value): 出价 5
+    🔵 P1 (expected-value): 出价 6
+    🟠 P2 (expected-value): 出价 7
+    🔵 P1 (expected-value): 出价 8
+    🟠 P2 (expected-value): 放弃竞拍
+
+  ⚓ 放置船只阶段
+    🔵 P1 (expected-value): 📈 买入 SILK 股票 (价格5)
+    🔵 P1 (expected-value): 放置船只: {"JADE":4,"SILK":3,"NUTMEG":2,"GINSENG":0}
+
+  💰 投资阶段 (第 1 步)
+    🔵 P1 (expected-value): 🚢 投资船员 🟩翡翠 座位0 (花费3)
+       备选项: crew-JADE-1(4), crew-JADE-2(5), crew-JADE-3(5)...
+    🟠 P2 (expected-value): 🚢 投资船员 🟪丝绸 座位0 (花费3)
+       备选项: crew-JADE-1(4), crew-JADE-2(5), crew-JADE-3(5)...
+    🟢 P0 (trained): 🚢 投资船员 🟩翡翠 座位1 (花费4)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-1(4)...
+    🔵 P1 (expected-value): 🚢 投资船员 🟧肉豆蔻 座位0 (花费2)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-1(4)...
+    🟠 P2 (expected-value): 🚢 投资船员 🟪丝绸 座位1 (花费4)
+       备选项: crew-JADE-2(5), crew-JADE-3(5), crew-SILK-2(5)...
+    🟢 P0 (trained): 🚢 投资船员 🟩翡翠 座位2 (花费5)
+       备选项: crew-JADE-3(5), crew-SILK-2(5), crew-NUTMEG-1(3)...
+
+  当前投资:
+    crew-JADE-0: 🔵 P1 (expected-value)
+    crew-SILK-0: 🟠 P2 (expected-value)
+    crew-JADE-1: 🟢 P0 (trained)
+    crew-NUTMEG-0: 🔵 P1 (expected-value)
+    crew-SILK-1: 🟠 P2 (expected-value)
+    crew-JADE-2: 🟢 P0 (trained)
+  船只状态:
+    🟩翡翠 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p1,p0,p0]
+    🟪丝绸 [▓▓▓░░░░░░░░░░░] 位置3/14 [船员: p2,p2]
+    🟧肉豆蔻 [▓▓░░░░░░░░░░░░] 位置2/14 [船员: p1]
+
+  ⛵ 航行阶段
+  船只状态:
+    🟩翡翠 [▓▓▓▓░░░░░░░░░░] 位置4/14 [船员: p1,p0,p0]
+    🟪丝绸 [▓▓▓░░░░░░░░░░░] 位置3/14 [船员: p2,p2]
+    🟧肉豆蔻 [▓▓░░░░░░░░░░░░] 位置2/14 [船员: p1]
+    🎲 掷骰: [5, 5, 5] = 15
+       🟩翡翠 → 位置9
+       🟪丝绸 → 位置8
+       🟧肉豆蔻 → 位置7
+
+  💰 投资阶段 (第 4 步)
+    🔵 P1 (expected-value): 🚢 投资船员 🟧肉豆蔻 座位1 (花费3)
+       备选项: crew-JADE-3(5), crew-SILK-2(5), crew-NUTMEG-2(4)...
+    🟠 P2 (expected-value): 🛡️ 购买保险 (免费)
+       备选项: crew-JADE-3(5), crew-SILK-2(5), crew-NUTMEG-2(4)...
+    🟢 P0 (trained): 🚢 投资船员 🟪丝绸 座位2 (花费5)
+       备选项: crew-JADE-3(5), crew-NUTMEG-2(4), harbor-A(4)...
+
+  当前投资:
+    crew-JADE-0: 🔵 P1 (expected-value)
+    crew-SILK-0: 🟠 P2 (expected-value)
+    crew-JADE-1: 🟢 P0 (trained)
+    crew-NUTMEG-0: 🔵 P1 (expected-value)
+    crew-SILK-1: 🟠 P2 (expected-value)
+    crew-JADE-2: 🟢 P0 (trained)
+    crew-NUTMEG-1: 🔵 P1 (expected-value)
+    insurance: 🟠 P2 (expected-value)
+    crew-SILK-2: 🟢 P0 (trained)
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓░░░░░] 位置9/14 [船员: p1,p0,p0]
+    🟪丝绸 [▓▓▓▓▓▓▓▓░░░░░░] 位置8/14 [船员: p2,p2,p0]
+    🟧肉豆蔻 [▓▓▓▓▓▓▓░░░░░░░] 位置7/14 [船员: p1,p1]
+
+  ⛵ 航行阶段
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓░░░░░] 位置9/14 [船员: p1,p0,p0]
+    🟪丝绸 [▓▓▓▓▓▓▓▓░░░░░░] 位置8/14 [船员: p2,p2,p0]
+    🟧肉豆蔻 [▓▓▓▓▓▓▓░░░░░░░] 位置7/14 [船员: p1,p1]
+    🎲 掷骰: [6, 3, 1] = 10
+       🟩翡翠 → 位置14 ✅
+       🟪丝绸 → 位置11
+       🟧肉豆蔻 → 位置8
+
+  💰 投资阶段 (第 6 步)
+    🔵 P1 (expected-value): 🚢 投资船员 🟩翡翠 座位3 (花费5)
+       备选项: crew-NUTMEG-2(4), harbor-A(4), harbor-B(3)...
+    🟠 P2 (expected-value): 🏢 投资港口办事处 harbor-B (花费3)
+       备选项: crew-NUTMEG-2(4), harbor-A(4), harbor-C(2)...
+    🟢 P0 (trained): 🏢 投资港口办事处 harbor-A (花费4)
+       备选项: crew-NUTMEG-2(4), harbor-C(2), shipyard-A(4)...
+
+  当前投资:
+    crew-JADE-0: 🔵 P1 (expected-value)
+    crew-SILK-0: 🟠 P2 (expected-value)
+    crew-JADE-1: 🟢 P0 (trained)
+    crew-NUTMEG-0: 🔵 P1 (expected-value)
+    crew-SILK-1: 🟠 P2 (expected-value)
+    crew-JADE-2: 🟢 P0 (trained)
+    crew-NUTMEG-1: 🔵 P1 (expected-value)
+    insurance: 🟠 P2 (expected-value)
+    crew-SILK-2: 🟢 P0 (trained)
+    crew-JADE-3: 🔵 P1 (expected-value)
+    harbor-B: 🟠 P2 (expected-value)
+    harbor-A: 🟢 P0 (trained)
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 位置14/14 ✅到港 [船员: p1,p0,p0,p1]
+    🟪丝绸 [▓▓▓▓▓▓▓▓▓▓▓░░░] 位置11/14 [船员: p2,p2,p0]
+    🟧肉豆蔻 [▓▓▓▓▓▓▓▓░░░░░░] 位置8/14 [船员: p1,p1]
+
+  ⛵ 航行阶段
+  船只状态:
+    🟩翡翠 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 位置14/14 ✅到港 [船员: p1,p0,p0,p1]
+    🟪丝绸 [▓▓▓▓▓▓▓▓▓▓▓░░░] 位置11/14 [船员: p2,p2,p0]
+    🟧肉豆蔻 [▓▓▓▓▓▓▓▓░░░░░░] 位置8/14 [船员: p1,p1]
+    🎲 掷骰: [2, 3, 1] = 6
+       🟩翡翠 → 位置14 ✅
+       🟪丝绸 → 位置14 ✅
+       🟧肉豆蔻 → 位置9
+
+════════════════════════════════════════════════════════════
+  最终结果
+════════════════════════════════════════════════════════════
+
+  🥇 第1名 🟠 P2 (expected-value)
+     💰 现金: 60 | 📊 股票价值: 50 | 抵押罚款: -0
+     🏆 总分: 110
+
+  🥈 第2名 🟢 P0 (trained)
+     💰 现金: 49 | 📊 股票价值: 20 | 抵押罚款: -0
+     🏆 总分: 69
+
+  🥉 第3名 🔵 P1 (expected-value)
+     💰 现金: 35 | 📊 股票价值: 20 | 抵押罚款: -0
+     🏆 总分: 55

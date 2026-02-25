@@ -118,7 +118,7 @@ export class GameEngine {
 
   private initializePlayers(config: GameConfig): PlayerState[] {
     const players: PlayerState[] = [];
-    
+
     for (let i = 0; i < config.players; i++) {
       players.push({
         id: `player${i + 1}`,
@@ -131,7 +131,7 @@ export class GameEngine {
         aiStrategy: i > 0 ? config.aiStrategies[i - 1] : undefined
       });
     }
-    
+
     return players;
   }
 
@@ -152,7 +152,7 @@ export class GameEngine {
     // 随机生成初始股票
     const stocks = [];
     const cargoTypes: CargoType[] = ['JADE', 'SILK', 'GINSENG', 'NUTMEG'];
-    
+
     for (let i = 0; i < 2; i++) {
       const randomCargo = cargoTypes[Math.floor(Math.random() * cargoTypes.length)];
       stocks.push({
@@ -161,13 +161,13 @@ export class GameEngine {
         isMortgaged: false
       });
     }
-    
+
     return stocks;
   }
 
   private applyAction(state: GameState, action: GameAction): GameState {
     const newState = { ...state };
-    
+
     switch (action.type) {
       case 'BID':
         return this.processBid(newState, action);
@@ -204,10 +204,10 @@ export class GameEngine {
 
     // 扣除出价金额
     player.cash -= bidAmount;
-    
+
     // 设置港务长
     state.auctionWinner = action.playerId;
-    
+
     // 初始化港务长状态
     state.harborMaster = {
       playerId: action.playerId,
@@ -221,7 +221,7 @@ export class GameEngine {
       },
       hasCompletedStockPurchase: false
     };
-    
+
     return state;
   }
 
@@ -231,10 +231,10 @@ export class GameEngine {
 
     const cargoType = action.data.cargoType as CargoType;
     const cost = Math.max(5, state.stockPrices[cargoType]);
-    
+
     // 检查是否为港务长购买股票
     const isHarborMaster = state.harborMaster?.playerId === action.playerId;
-    
+
     if (player.cash >= cost) {
       player.cash -= cost;
       const existingStock = player.stocks.find(s => s.cargoType === cargoType);
@@ -243,7 +243,7 @@ export class GameEngine {
       } else {
         player.stocks.push({ cargoType, quantity: 1, isMortgaged: false });
       }
-      
+
       // 如果是港务长购买股票，标记为已完成
       if (isHarborMaster && state.harborMaster) {
         state.harborMaster.hasCompletedStockPurchase = true;
@@ -256,14 +256,14 @@ export class GameEngine {
         player.cash = 0; // 使用所有现金
         player.cash += mortgageResult.cashFromMortgage;
         player.cash -= cost; // 扣除购买成本
-        
+
         const existingStock = player.stocks.find(s => s.cargoType === cargoType);
         if (existingStock) {
           existingStock.quantity++;
         } else {
           player.stocks.push({ cargoType, quantity: 1, isMortgaged: false });
         }
-        
+
         // 如果是港务长购买股票，标记为已完成
         if (isHarborMaster && state.harborMaster) {
           state.harborMaster.hasCompletedStockPurchase = true;
@@ -274,7 +274,7 @@ export class GameEngine {
         throw new Error('Insufficient funds to buy stock');
       }
     }
-    
+
     return state;
   }
 
@@ -282,13 +282,13 @@ export class GameEngine {
     let totalCashFromMortgage = 0;
     const stocksToMortgage: { stock: any; quantity: number }[] = [];
     let remainingNeededCash = neededCash;
-    
+
     // 计算需要抵押多少股票
     for (const stock of player.stocks) {
       if (stock.quantity > 0 && !stock.isMortgaged && remainingNeededCash > 0) {
         const availableQuantity = stock.quantity;
         const neededQuantity = Math.ceil(remainingNeededCash / 12); // 每抵押一股获得12现金
-        
+
         if (neededQuantity <= availableQuantity) {
           stocksToMortgage.push({ stock, quantity: neededQuantity });
           totalCashFromMortgage += neededQuantity * 12;
@@ -301,17 +301,17 @@ export class GameEngine {
         }
       }
     }
-    
+
     if (totalCashFromMortgage >= neededCash) {
       // 执行抵押
       stocksToMortgage.forEach(({ stock, quantity }) => {
         stock.quantity -= quantity;
         stock.isMortgaged = true;
       });
-      
+
       return { success: true, cashFromMortgage: totalCashFromMortgage };
     }
-    
+
     return { success: false, cashFromMortgage: 0 };
   }
 
@@ -321,21 +321,21 @@ export class GameEngine {
 
     const cargoType = action.data.cargoType as CargoType;
     const quantity = action.data.quantity as number;
-    
+
     const stock = player.stocks.find(s => s.cargoType === cargoType);
     if (stock && stock.quantity >= quantity) {
       // 减少股票数量
       stock.quantity -= quantity;
-      
+
       // 如果股票数量为0，标记为已抵押
       if (stock.quantity === 0) {
         stock.isMortgaged = true;
       }
-      
+
       // 增加现金
       player.cash += quantity * 12; // 每抵押一股获得12现金
     }
-    
+
     return state;
   }
 
@@ -347,25 +347,25 @@ export class GameEngine {
     if (state.phase !== 'INVESTMENT') {
       throw new Error(`当前不在投资阶段，当前阶段: ${state.phase}`);
     }
-    
+
     // 验证投资轮次状态是否存在
     if (!state.investmentRound) {
       throw new Error('投资轮次状态不存在');
     }
-    
+
     const { currentPlayerIndex, investmentOrder } = state.investmentRound;
     const expectedPlayerId = investmentOrder[currentPlayerIndex];
-    
+
     console.log(`[GameFlow] Investment attempt: Player ${action.playerId}, Expected: ${expectedPlayerId}, Index: ${currentPlayerIndex}/${investmentOrder.length - 1}`);
     console.log(`[GameFlow] Investment order: ${investmentOrder.join(', ')}`);
-    
+
     if (action.playerId !== expectedPlayerId) {
       const expectedPlayer = state.players.find(p => p.id === expectedPlayerId);
       throw new Error(`当前不是 ${expectedPlayer?.name || expectedPlayerId} 的投资回合`);
     }
 
     const slotId = action.data.slotId as string;
-    
+
     // 计算投资成本（船员投资根据已投资数量递增）
     const cost = this.calculateInvestmentCost(slotId, player, state);
     if (cost !== undefined && player.cash >= cost) {
@@ -374,7 +374,7 @@ export class GameEngine {
       if (alreadyInvested) {
         throw new Error('该槽位已被投资');
       }
-      
+
       player.cash -= cost;
       // 如果是船员投资，需要分配到正确的座位
       if (slotId.startsWith('crew-')) {
@@ -393,7 +393,7 @@ export class GameEngine {
           phase: state.phase
         });
       }
-      
+
       // 推进投资轮次
       // 注意：advanceInvestmentRound 会修改 this.state，所以需要先保存当前状态
       const updatedState = this.advanceInvestmentRound();
@@ -407,7 +407,7 @@ export class GameEngine {
     } else {
       throw new Error('资金不足');
     }
-    
+
     return state;
   }
 
@@ -425,7 +425,7 @@ export class GameEngine {
     // 船员投资成本根据已投资数量递增
     if (slotId.startsWith('crew-')) {
       const cargoType = slotId.split('-')[1].toUpperCase();
-      
+
       // 计算所有玩家对该货物类型的投资总数
       const totalInvestedCount = state.players.reduce((total, p) => {
         const playerInvestments = p.investments.filter(
@@ -433,7 +433,7 @@ export class GameEngine {
         ).length;
         return total + playerInvestments;
       }, 0);
-      
+
       // 根据马尼拉规则设置成本
       const costSchemes: Record<string, number[]> = {
         'JADE': [3, 4, 5, 5],     // 翡翠：3,4,5,5
@@ -441,11 +441,11 @@ export class GameEngine {
         'GINSENG': [1, 2, 3],     // 人参：1,2,3
         'NUTMEG': [2, 3, 4]       // 肉豆蔻：2,3,4
       };
-      
+
       const costs = costSchemes[cargoType] || [1];
       return costs[totalInvestedCount] || costs[costs.length - 1];
     }
-    
+
     // 其他投资的固定成本
     const fixedCosts: Record<string, number> = {
       'harbor-office-a': 4,
@@ -460,7 +460,7 @@ export class GameEngine {
       'navigator-big': 5,
       'insurance': 0
     };
-    
+
     return fixedCosts[slotId] || 0;
   }
 
@@ -471,34 +471,34 @@ export class GameEngine {
 
   private processHarborMasterSelectCargo(state: GameState, action: GameAction): GameState {
     const { cargos } = action.data;  // CargoType[] 长度为3
-    
+
     if (!state.harborMaster) return state;
-    
+
     state.harborMaster.selectedCargos = cargos;
-    
+
     // 更新船只货物类型
     cargos.forEach((cargo: CargoType, index: number) => {
       if (state.ships[index]) {
         state.ships[index].cargoType = cargo;
       }
     });
-    
+
     state.harborMaster.currentStep = 'SET_POSITIONS';
-    
+
     return state;
   }
 
   private processHarborMasterSetPositions(state: GameState, action: GameAction): GameState {
     const { positions } = action.data;  // Record<CargoType, number>
-    
+
     if (!state.harborMaster) return state;
-    
+
     // 验证总和为9，每个0-5
     const total = (Object.values(positions) as number[]).reduce((a: number, b: number) => a + b, 0);
     if (total !== 9) {
       throw new Error('船只位置总和必须为9');
     }
-    
+
     // 设置船只位置
     Object.entries(positions).forEach(([cargo, position]) => {
       const ship = state.ships.find(s => s.cargoType === cargo as CargoType);
@@ -506,17 +506,32 @@ export class GameEngine {
         ship.position = position as number;
       }
     });
-    
+
     // 保存港务长选择的货物到游戏状态
     state.selectedCargos = state.harborMaster.selectedCargos;
-    
-    // 完成港务长阶段，进入投资阶段
+
+    // 完成港务长阶段
     state.harborMaster = undefined;
+
+    // 推进游戏流程到第一个 INVESTMENT 事件
+    // AUCTION(0) → HARBOR_MASTER(1) → INVESTMENT(2)
+    // 需要将 currentEventIndex 设置到 INVESTMENT 事件
+    if (state.gameFlow) {
+      // 找到第一个 INVESTMENT 事件的索引
+      const firstInvestmentIndex = state.gameFlow.eventSequence.findIndex(
+        e => e === 'INVESTMENT'
+      );
+      if (firstInvestmentIndex >= 0) {
+        state.gameFlow.currentEventIndex = firstInvestmentIndex;
+        console.log(`[GameFlow] Harbor master completed, advancing to event index ${firstInvestmentIndex} (INVESTMENT)`);
+      }
+    }
+
     state.phase = 'INVESTMENT';
-    
+
     // 初始化投资轮次
     this.initializeInvestmentRound(state);
-    
+
     return state;
   }
 
@@ -527,7 +542,7 @@ export class GameEngine {
     const harborMasterIndex = state.players.findIndex(
       p => p.id === state.auctionWinner
     );
-    
+
     const order: string[] = [];
     for (let i = 0; i < playerCount; i++) {
       const index = (harborMasterIndex + i) % playerCount;
@@ -550,32 +565,32 @@ export class GameEngine {
       console.log('[GameFlow] ERROR: advanceInvestmentRound called without investmentRound state');
       return null;
     }
-    
+
     const { currentPlayerIndex, investmentOrder, currentRound } = this.state.investmentRound;
     const currentPlayerId = investmentOrder[currentPlayerIndex];
     const nextPlayerIndex = currentPlayerIndex + 1;
-    
+
     console.log(`[GameFlow] Investment Round ${currentRound}: Player ${currentPlayerId} (${currentPlayerIndex + 1}/${investmentOrder.length}) completed investment`);
-    
+
     if (nextPlayerIndex >= investmentOrder.length) {
       // 本轮投资完成，进入下一个事件
       console.log(`[GameFlow] Investment Round ${currentRound} completed: All ${investmentOrder.length} players have invested`);
-      
+
       // 在推进之前，保存当前事件索引用于调试
       const beforeAdvanceIndex = this.state.gameFlow?.currentEventIndex;
       const beforeAdvanceEvent = this.getCurrentEvent();
       console.log(`[GameFlow] Before advanceToNextEvent: index=${beforeAdvanceIndex}, event=${beforeAdvanceEvent}`);
-      
+
       // 直接推进到下一个事件
       // clearEventState会处理状态清理
       const result = this.advanceToNextEvent();
-      
+
       if (result) {
         const afterAdvanceIndex = result.gameFlow?.currentEventIndex;
         const afterAdvanceEvent = this.getCurrentEvent();
         console.log(`[GameFlow] After advanceToNextEvent: index=${afterAdvanceIndex}, event=${afterAdvanceEvent}`);
       }
-      
+
       return result;
     } else {
       // 下一个玩家投资
@@ -621,7 +636,7 @@ export class GameEngine {
     const dice1 = Math.floor(Math.random() * 6) + 1;
     const dice2 = Math.floor(Math.random() * 6) + 1;
     const dice3 = Math.floor(Math.random() * 6) + 1;
-    
+
     const diceResult = {
       dice1,
       dice2,
@@ -629,25 +644,25 @@ export class GameEngine {
       total: dice1 + dice2 + dice3,
       phase: state.sailingPhase || 1
     };
-    
+
     // 添加到骰子结果历史
     if (!state.diceResults) {
       state.diceResults = [];
     }
     state.diceResults.push(diceResult);
-    
+
     // 移动船只 - 每艘船根据对应的骰子移动
     state.ships.forEach((ship, index) => {
       const diceValue = index === 0 ? dice1 : index === 1 ? dice2 : dice3;
       ship.position += diceValue;
-      
+
       // 检查是否到港（位置14）
       if (ship.position >= 14) {
         ship.isDocked = true;
         ship.position = 14; // 确保位置不超过14
       }
     });
-    
+
     // 进入下一个事件
     const nextState = this.advanceToNextEvent();
     if (!nextState) {
@@ -659,19 +674,19 @@ export class GameEngine {
   public processSettlement(state: GameState): void {
     // 1. 计算船员投资奖励
     this.calculateCrewRewards(state);
-    
+
     // 2. 计算办事处投资奖励
     this.calculateOfficeRewards(state);
-    
+
     // 3. 计算海盗投资奖励
     this.calculatePirateRewards(state);
-    
+
     // 4. 更新股价
     this.updateStockPrices(state);
-    
+
     // 5. 计算股票价值
     this.calculateStockValues(state);
-    
+
     // 6. 重置投资
     this.resetInvestments(state);
   }
@@ -694,24 +709,24 @@ export class GameEngine {
   private calculateOfficeRewards(state: GameState): void {
     const dockedShips = state.ships.filter(ship => ship.isDocked).length;
     const shipyardShips = state.ships.filter(ship => ship.isInShipyard).length;
-    
+
     state.players.forEach(player => {
       player.investments.forEach(investment => {
         if (investment.type === 'HARBOR_OFFICE') {
           let reward = 0;
-          if (investment.slotId.includes('a') && dockedShips >= 1) reward = 6;
-          else if (investment.slotId.includes('b') && dockedShips >= 2) reward = 8;
-          else if (investment.slotId.includes('c') && dockedShips >= 3) reward = 15;
-          
+          if (investment.slotId.endsWith('-a') && dockedShips >= 1) reward = 6;
+          else if (investment.slotId.endsWith('-b') && dockedShips >= 2) reward = 8;
+          else if (investment.slotId.endsWith('-c') && dockedShips >= 3) reward = 15;
+
           if (reward > 0) {
             player.cash += reward;
           }
         } else if (investment.type === 'SHIPYARD_OFFICE') {
           let reward = 0;
-          if (investment.slotId.includes('a') && shipyardShips >= 1) reward = 6;
-          else if (investment.slotId.includes('b') && shipyardShips >= 2) reward = 8;
-          else if (investment.slotId.includes('c') && shipyardShips >= 3) reward = 15;
-          
+          if (investment.slotId.endsWith('-a') && shipyardShips >= 1) reward = 6;
+          else if (investment.slotId.endsWith('-b') && shipyardShips >= 2) reward = 8;
+          else if (investment.slotId.endsWith('-c') && shipyardShips >= 3) reward = 15;
+
           if (reward > 0) {
             player.cash += reward;
           }
@@ -722,7 +737,7 @@ export class GameEngine {
 
   private calculatePirateRewards(state: GameState): void {
     const hijackedShips = state.ships.filter(ship => ship.isHijacked).length;
-    
+
     state.players.forEach(player => {
       player.investments.forEach(investment => {
         if (investment.type === 'PIRATE' && hijackedShips > 0) {
@@ -761,17 +776,17 @@ export class GameEngine {
     const parts = slotId.split('-');
     const cargoType = parts[1].toUpperCase() as CargoType;
     const seatNumber = parseInt(parts[2]);
-    
+
     // 找到对应的船只
     const ship = state.ships.find(s => s.cargoType === cargoType);
     if (!ship) return null;
-    
+
     // 检查座位是否已被占用
     const isSeatOccupied = ship.crew.some(crew => crew.seatNumber === seatNumber);
     if (isSeatOccupied) {
       throw new Error('该座位已被占用');
     }
-    
+
     // 添加船员到船只
     ship.crew.push({
       playerId: player.id,
@@ -779,7 +794,7 @@ export class GameEngine {
       seatNumber: seatNumber,
       cost: cost
     });
-    
+
     // 记录投资
     player.investments.push({
       id: `investment-${Date.now()}`,
@@ -790,7 +805,7 @@ export class GameEngine {
       round: state.round,
       phase: state.phase
     });
-    
+
     return ship;
   }
 
@@ -799,7 +814,7 @@ export class GameEngine {
     state.players.forEach(player => {
       player.investments = [];
     });
-    
+
     // 重置船只状态
     state.ships.forEach(ship => {
       ship.position = 0;
@@ -808,10 +823,10 @@ export class GameEngine {
       ship.isHijacked = false;
       ship.crew = [];
     });
-    
+
     // 清除骰子结果
     state.diceResults = [];
-    
+
     // 清除选择的货物
     state.selectedCargos = undefined;
   }
@@ -821,7 +836,7 @@ export class GameEngine {
   private initializeGameFlow(state: GameState): void {
     const playerCount = state.players.length;
     const eventSequence = playerCount === 3 ? GAME_FLOW_3P : GAME_FLOW_4P;
-    
+
     state.gameFlow = {
       eventSequence,
       currentEventIndex: 0
@@ -830,38 +845,38 @@ export class GameEngine {
 
   public advanceToNextEvent(): GameState | null {
     if (!this.state?.gameFlow) return null;
-    
+
     const currentEventIndex = this.state.gameFlow.currentEventIndex;
     const currentEvent = this.state.gameFlow.eventSequence[currentEventIndex];
-    
+
     console.log(`[GameFlow] ========================================`);
     console.log(`[GameFlow] Advancing from event ${currentEventIndex}: ${currentEvent}`);
     if (this.state.investmentRound) {
       console.log(`[GameFlow] Current investment state: player ${this.state.investmentRound.currentPlayerIndex + 1}/${this.state.investmentRound.investmentOrder.length}, order: ${this.state.investmentRound.investmentOrder.join(', ')}`);
     }
-    
+
     this.state.gameFlow.currentEventIndex++;
     const nextEvent = this.getCurrentEvent();
-    
+
     console.log(`[GameFlow] Next event: ${nextEvent} (index: ${this.state.gameFlow.currentEventIndex})`);
-    
+
     if (!nextEvent) {
       // 游戏结束
       console.log(`[GameFlow] Game ended - no more events`);
       this.state.phase = 'GAME_END';
       return this.state;
     }
-    
+
     // 清除上一个事件的临时状态
     this.clearEventState(this.state, currentEvent, nextEvent);
-    
+
     // 根据事件设置游戏阶段
     this.state.phase = this.eventToPhase(nextEvent);
     console.log(`[GameFlow] Phase set to: ${this.state.phase}`);
-    
+
     // 初始化事件特定状态
     this.initializeEventState(nextEvent);
-    
+
     console.log(`[GameFlow] ========================================`);
     return this.state;
   }
@@ -872,20 +887,20 @@ export class GameEngine {
       console.log('[GameFlow] Clearing dice results');
       state.diceResults = [];
     }
-    
+
     // 当离开INVESTMENT进入非INVESTMENT事件时，清除投资轮次状态
     if (currentEvent === 'INVESTMENT' && nextEvent !== 'INVESTMENT' && state.investmentRound) {
       console.log('[GameFlow] Clearing investment round state (leaving INVESTMENT)');
       state.investmentRound = undefined;
     }
-    
+
     // 注意：不要在这里重置 currentPlayerIndex
     // 应该在 initializeEventState 中处理
   }
 
   private getCurrentEvent(): GameEvent | null {
     if (!this.state?.gameFlow) return null;
-    
+
     const { eventSequence, currentEventIndex } = this.state.gameFlow;
     return eventSequence[currentEventIndex] || null;
   }
@@ -919,7 +934,7 @@ export class GameEngine {
           console.log('[GameFlow] Reusing investment round, resetting player index to 0');
           console.log(`[GameFlow] Existing investment order: ${this.state.investmentRound.investmentOrder.join(', ')}`);
           console.log(`[GameFlow] Current event index: ${currentEventIndex}`);
-          
+
           // 根据事件索引计算投资轮次
           // 3人游戏：索引2=轮1, 索引3=轮2, 索引5=轮3, 索引8=轮4
           // 4人游戏：索引2=轮1, 索引4=轮2, 索引7=轮3
@@ -937,7 +952,7 @@ export class GameEngine {
             else if (currentEventIndex === 4) newRound = 2;
             else if (currentEventIndex === 7) newRound = 3;
           }
-          
+
           this.state.investmentRound.currentPlayerIndex = 0;
           this.state.investmentRound.currentRound = newRound;
           // 保持 investmentOrder 不变
@@ -964,22 +979,22 @@ export class GameEngine {
   private processPirateOnboard(state: GameState): void {
     // 检查是否有船只在位置13
     const shipsAt13 = state.ships.filter(s => s.position === 13);
-    
+
     if (shipsAt13.length === 0) {
       // 没有船在位置13，跳过海盗阶段
       this.advanceToNextEvent();
       return;
     }
-    
+
     // 检查是否有玩家投资了海盗
     const piratePlayers = this.getPiratePlayers(state);
-    
+
     if (piratePlayers.length === 0) {
       // 没有海盗，跳过
       this.advanceToNextEvent();
       return;
     }
-    
+
     // 进入海盗上船阶段，等待玩家决策
     state.pirateOnboardState = {
       shipsAt13: shipsAt13.map(s => s.cargoType),
@@ -991,22 +1006,22 @@ export class GameEngine {
   private processPirateHijack(state: GameState): void {
     // 检查是否有船只在位置13
     const shipsAt13 = state.ships.filter(s => s.position === 13);
-    
+
     if (shipsAt13.length === 0) {
       // 没有船在位置13，跳过海盗阶段
       this.advanceToNextEvent();
       return;
     }
-    
+
     // 检查是否有海盗船长
     const pirateCaptain = this.getPirateCaptain(state);
-    
+
     if (!pirateCaptain) {
       // 没有海盗船长，跳过
       this.advanceToNextEvent();
       return;
     }
-    
+
     // 进入海盗劫持阶段，等待玩家决策
     state.pirateHijackState = {
       shipsAt13: shipsAt13.map(s => s.cargoType),
@@ -1017,8 +1032,8 @@ export class GameEngine {
 
   private getPiratePlayers(state: GameState): string[] {
     return state.players
-      .filter(player => 
-        player.investments.some(inv => 
+      .filter(player =>
+        player.investments.some(inv =>
           inv.type === 'PIRATE' && inv.slotId.includes('pirate')
         )
       )
@@ -1026,8 +1041,8 @@ export class GameEngine {
   }
 
   private getPirateCaptain(state: GameState): string | null {
-    const captainPlayer = state.players.find(player => 
-      player.investments.some(inv => 
+    const captainPlayer = state.players.find(player =>
+      player.investments.some(inv =>
         inv.type === 'PIRATE' && inv.slotId.includes('pirate-captain')
       )
     );
@@ -1061,7 +1076,7 @@ export class GameEngine {
         if (emptySeats.length === 0) {
           return { success: false, error: 'No empty seats available' };
         }
-        
+
         // 海盗占据第一个空位
         const seatNumber = emptySeats[0];
         ship.crew.push({
@@ -1076,13 +1091,13 @@ export class GameEngine {
         if (!targetCrewId) {
           return { success: false, error: 'Target crew ID required for kick action' };
         }
-        
+
         // 找到要踢掉的船员
         const crewIndex = ship.crew.findIndex(c => c.playerId === targetCrewId);
         if (crewIndex === -1) {
           return { success: false, error: 'Target crew not found' };
         }
-        
+
         // 替换船员
         ship.crew[crewIndex] = {
           playerId: piratePlayerId,
@@ -1148,7 +1163,7 @@ export class GameEngine {
     if (!this.state?.pirateOnboardState) return;
 
     const { currentPirateIndex, piratePlayers } = this.state.pirateOnboardState;
-    
+
     if (currentPirateIndex < piratePlayers.length - 1) {
       // 还有海盗需要行动
       this.state.pirateOnboardState.currentPirateIndex++;
@@ -1163,13 +1178,13 @@ export class GameEngine {
     const occupiedSeats = ship.crew.map(c => c.seatNumber);
     const totalSeats = this.getTotalSeats(ship.cargoType);
     const emptySeats: number[] = [];
-    
+
     for (let i = 1; i <= totalSeats; i++) {
       if (!occupiedSeats.includes(i)) {
         emptySeats.push(i);
       }
     }
-    
+
     return emptySeats;
   }
 
@@ -1188,13 +1203,13 @@ export class GameEngine {
   private processNavigatorUse(state: GameState): void {
     // 检查是否有玩家投资了领航员
     const navigatorPlayers = this.getNavigatorPlayers(state);
-    
+
     if (navigatorPlayers.length === 0) {
       // 没有领航员，直接进入下一个事件
       this.advanceToNextEvent();
       return;
     }
-    
+
     // 进入领航员使用阶段，等待玩家决策
     state.navigatorUseState = {
       navigatorPlayers,
@@ -1204,8 +1219,8 @@ export class GameEngine {
 
   private getNavigatorPlayers(state: GameState): string[] {
     return state.players
-      .filter(player => 
-        player.investments.some(inv => 
+      .filter(player =>
+        player.investments.some(inv =>
           inv.type === 'NAVIGATOR' && inv.slotId.includes('navigator')
         )
       )
@@ -1232,7 +1247,7 @@ export class GameEngine {
     }
 
     // 检查玩家是否有领航员投资
-    const navigatorInvestment = player.investments.find(inv => 
+    const navigatorInvestment = player.investments.find(inv =>
       inv.type === 'NAVIGATOR' && inv.slotId.includes('navigator')
     );
 
@@ -1248,7 +1263,7 @@ export class GameEngine {
 
     // 应用移动
     ship.position += movement;
-    
+
     // 确保位置在有效范围内
     if (ship.position < 0) ship.position = 0;
     if (ship.position > 14) ship.position = 14;
@@ -1262,7 +1277,7 @@ export class GameEngine {
     if (!this.state?.navigatorUseState) return;
 
     const { currentNavigatorIndex, navigatorPlayers } = this.state.navigatorUseState;
-    
+
     if (currentNavigatorIndex < navigatorPlayers.length - 1) {
       // 还有领航员需要行动
       this.state.navigatorUseState.currentNavigatorIndex++;
@@ -1314,7 +1329,7 @@ class GameRules {
 
     const cargoType = action.data.cargoType as CargoType;
     const cost = Math.max(5, state.stockPrices[cargoType]);
-    
+
     if (player.cash < cost) {
       return { isValid: false, error: 'Insufficient funds to buy stock' };
     }
@@ -1330,7 +1345,7 @@ class GameRules {
 
     const cargoType = action.data.cargoType;
     const stock = player.stocks.find(s => s.cargoType === cargoType);
-    
+
     if (!stock || stock.quantity === 0) {
       return { isValid: false, error: 'No stock to mortgage' };
     }

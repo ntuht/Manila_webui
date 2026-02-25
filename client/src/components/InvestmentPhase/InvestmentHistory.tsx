@@ -4,13 +4,13 @@ import { Card } from '../Shared/Card';
 
 export const InvestmentHistory: React.FC = () => {
   const { gameState } = useGameStore();
-  
+
   if (!gameState) return null;
-  
-  const investmentHistory = gameState.history.filter(entry => 
-    entry.action.type === 'SELECT_INVESTMENT'
+
+  const investmentHistory = gameState.history.filter(entry =>
+    entry.action === 'SELECT_INVESTMENT'
   ).slice(-10); // 显示最近10次投资
-  
+
   if (investmentHistory.length === 0) {
     return (
       <Card title="投资历史" className="p-4">
@@ -18,7 +18,7 @@ export const InvestmentHistory: React.FC = () => {
       </Card>
     );
   }
-  
+
   return (
     <Card title="投资历史" className="p-4">
       <div className="space-y-2">
@@ -30,7 +30,7 @@ export const InvestmentHistory: React.FC = () => {
                 {player?.name}
               </span>
               <span className="font-medium text-green-600">
-                {entry.action.data.slotId}
+                {entry.detail}
               </span>
             </div>
           );

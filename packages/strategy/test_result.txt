@@ -1,0 +1,17 @@
+﻿
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/Users/Admin/Documents/projects/Manila_webui/packages/strategy[39m
+
+ [32m✓[39m __tests__/impact.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+[90mstdout[2m | __tests__/simulator.test.ts[2m > [22m[2mManila Strategy Simulator[2m > [22m[2m随机 vs 贪婪 vs 期望值
+[22m[39m随机胜率: 44.0%
+贪婪胜率: 6.0%
+期望值胜率: 50.0%
+
+ [32m✓[39m __tests__/simulator.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 442[2mms[22m[39m
+   [33m[2m✓[22m[39m Manila Strategy Simulator[2m > [22m随机 vs 贪婪 vs 期望值 [33m 321[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m18 passed[39m[22m[90m (18)[39m
+[2m   Start at [22m 23:03:51
+[2m   Duration [22m 788ms[2m (transform 105ms, setup 0ms, collect 171ms, tests 447ms, environment 0ms, prepare 155ms)[22m
+

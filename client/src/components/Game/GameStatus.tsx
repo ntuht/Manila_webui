@@ -16,6 +16,7 @@ export const GameStatus: React.FC = () => {
   const getPhaseStatus = (phase: string) => {
     const statuses: Record<string, { text: string; color: string; bg: string }> = {
       'AUCTION': { text: '拍卖阶段', color: 'text-blue-600', bg: 'bg-blue-100' },
+      'HARBOR_MASTER': { text: '港务长行动', color: 'text-indigo-600', bg: 'bg-indigo-100' },
       'INVESTMENT': { text: '投资阶段', color: 'text-green-600', bg: 'bg-green-100' },
       'SAILING': { text: '航行阶段', color: 'text-purple-600', bg: 'bg-purple-100' },
       'SETTLEMENT': { text: '结算阶段', color: 'text-orange-600', bg: 'bg-orange-100' },
@@ -29,7 +30,7 @@ export const GameStatus: React.FC = () => {
   return (
     <div className="card">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">游戏状态</h3>
-      
+
       <div className="space-y-4">
         {/* 当前阶段 */}
         <div>
@@ -69,12 +70,11 @@ export const GameStatus: React.FC = () => {
               {gameState.ships.map(ship => (
                 <div
                   key={ship.id}
-                  className={`w-3 h-3 rounded-full ${
-                    ship.isDocked ? 'bg-green-500' :
-                    ship.isInShipyard ? 'bg-orange-500' :
-                    ship.isHijacked ? 'bg-red-500' :
-                    'bg-gray-300'
-                  }`}
+                  className={`w-3 h-3 rounded-full ${ship.isDocked ? 'bg-green-500' :
+                      ship.isInShipyard ? 'bg-orange-500' :
+                        ship.isHijacked ? 'bg-red-500' :
+                          'bg-gray-300'
+                    }`}
                   title={`${ship.cargoType}: ${ship.isDocked ? '已到港' : ship.isInShipyard ? '修船厂' : ship.isHijacked ? '被劫持' : '航行中'}`}
                 />
               ))}

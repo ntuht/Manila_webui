@@ -1,0 +1,37 @@
+﻿node.exe : C:\Users\Admin\Documents\projects\Ma
+nila_webui\packages\engine\src\game.ts:365
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Users\Admin\AppData\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C 
+   :\Users\Admin\...src\game.ts:365:String) [  
+  ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandErr 
+   or
+ 
+    if (cargos.length !== 3) throw new 
+Error('σ┐àΘí╗ΘÇëµï⌐ 3 τºìΦ┤ºτë⌐');
+               ^
+
+
+TypeError: Cannot read properties of undefined 
+(reading 'length')
+    at handlePlaceShips (C:\Users\Admin\Documen
+ts\projects\Manila_webui\packages\engine\src\ga
+me.ts:365:16)
+    at applyAction (C:\Users\Admin\Documents\pr
+ojects\Manila_webui\packages\engine\src\game.ts
+:156:20)
+    at <anonymous> (C:\Users\Admin\Documents\pr
+ojects\Manila_webui\packages\strategy\src\repla
+y.ts:266:13)
+    at ModuleJob.run 
+(node:internal/modules/esm/module_job:345:25)
+    at async onImport.tracePromise.__proto__ 
+(node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader 
+(node:internal/modules/run_main:117:5)
+
+Node.js v22.20.0

@@ -1,0 +1,16 @@
+{
+    "name": "manila",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "test": "npm test --workspaces",
+        "test:engine": "npm test -w packages/engine",
+        "test:strategy": "npm test -w packages/strategy",
+        "build": "npm run build --workspaces"
+    },
+    "devDependencies": {
+        "@types/node": "^25.2.3"
+    }
+}

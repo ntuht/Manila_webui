@@ -7,7 +7,7 @@ node_modules/
 coverage/
 .nyc_output
 
-# Production
+# Production builds (GitHub Actions 会自动构建)
 dist/
 build/
 out/
@@ -58,3 +58,28 @@ desktop/out/
 *.temp
 .cache/
 
+# ==================== 不需要上传的文件 ====================
+
+# RL 训练运行数据 (模型检查点、TensorBoard 日志等，极大)
+packages/rl/python/runs/
+packages/rl/python/__pycache__/
+
+# 复盘文件 (游戏记录)
+manila_replay_*.json
+
+# 临时调试/训练输出
+test_out*.txt
+test_output*.txt
+training_v*.txt
+record*.txt
+_impact_backup.txt
+
+# Python 虚拟环境
+*.pyc
+__pycache__/
+.venv/
+venv/
+
+# Gemini/Agent 文件
+.gemini/
+.agents/

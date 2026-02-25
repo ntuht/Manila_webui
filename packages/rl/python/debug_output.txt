@@ -1,0 +1,14 @@
+﻿Game ok: 38 steps
+Game 0 (seed=0): FAILED at step 14
+Error: Step failed: Cannot read properties of undefined (reading 'playerId')
+TypeError: Cannot read properties of undefined (reading 'playerId')
+    at handlePirateHijack (C:\Users\Admin\Documents\projects\Manila_webui\packages\engine\src\game.ts:1117:57)
+    at applyAction (C:\Users\Admin\Documents\projects\Manila_webui\packages\engine\src\game.ts:194:20)
+    at handleStep (C:\Users\Admin\Documents\projects\Manila_webui\packages\rl\src\bridge-server.ts:145:13)
+    at handleCommand (C:\Users\Admin\Documents\projects\Manila_webui\packages\rl\src\bridge-server.ts:100:24)
+    at Interface.<anonymous> (C:\Users\Admin\Documents\projects\Manila_webui\packages\rl\src\bridge-server.ts:504:22)
+    at Interface.emit (node:events:519:28)
+    at [_onLine] [as _onLine] (node:internal/readline/interface:419:12)
+    at [_normalWrite] [as _normalWrite] (node:internal/readline/interface:613:22)
+    at Socket.ondata (node:internal/readline/interface:250:23)
+    at Socket.emit (node:events:519:28)
