@@ -277,9 +277,9 @@ const InvestmentActions: React.FC<InvestmentActionsProps> = ({ pendingAction, pe
     const FIXED_SLOTS: { id: string; cost: number }[] = [
         { id: 'harbor-A', cost: 5 }, { id: 'harbor-B', cost: 5 }, { id: 'harbor-C', cost: 5 },
         { id: 'shipyard-A', cost: 5 }, { id: 'shipyard-B', cost: 5 }, { id: 'shipyard-C', cost: 5 },
-        { id: 'pirate-captain', cost: 5 }, { id: 'pirate-crew', cost: 3 },
-        { id: 'navigator-big', cost: 7 }, { id: 'navigator-small', cost: 5 },
-        { id: 'insurance', cost: 10 },
+        { id: 'pirate-captain', cost: 5 }, { id: 'pirate-crew', cost: 5 },
+        { id: 'navigator-big', cost: 5 }, { id: 'navigator-small', cost: 2 },
+        { id: 'insurance', cost: 0 },
     ];
 
     // Crew slots from ships (engine stores selected cargos as ships)
