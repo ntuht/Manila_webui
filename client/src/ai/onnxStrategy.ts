@@ -17,9 +17,13 @@ import { getValidActions } from '@manila/engine';
 // - numThreads=1: disable multi-threading to avoid .mjs worker dynamic imports
 //   that Vite intercepts and breaks
 // - proxy=false: disable JSEP proxy backend
-ort.env.wasm.wasmPaths = '/models/';
+// Use Vite's BASE_URL so paths work on both localhost and GitHub Pages subpath
+const BASE = import.meta.env.BASE_URL ?? '/';
+ort.env.wasm.wasmPaths = `${BASE}models/`;
 ort.env.wasm.numThreads = 1;
 ort.env.wasm.proxy = false;
+
+const MODEL_URL = `${BASE}models/manila_brain.onnx`;
 
 export class OnnxAIStrategy {
     private session: ort.InferenceSession | null = null;
@@ -38,8 +42,8 @@ export class OnnxAIStrategy {
 
         this.loading = (async () => {
             try {
-                console.log('[ONNX AI] Loading model...');
-                this.session = await ort.InferenceSession.create('/models/manila_brain.onnx', {
+                console.log('[ONNX AI] Loading model from', MODEL_URL);
+                this.session = await ort.InferenceSession.create(MODEL_URL, {
                     executionProviders: ['wasm'],
                 });
                 console.log('[ONNX AI] Model loaded successfully');
