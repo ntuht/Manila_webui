@@ -172,7 +172,15 @@ export const StockPurchaseStep: React.FC = () => {
         <div className="bg-white/3 rounded-lg p-2.5">
           <h4 className="text-[9px] text-slate-500 mb-1.5 font-medium">👥 所有玩家持仓</h4>
           <div className="overflow-x-auto">
-            <table className="w-full text-[10px]">
+            <table className="w-full text-[10px]" style={{ tableLayout: 'fixed' }}>
+              <colgroup>
+                <col style={{ width: '25%' }} />
+                <col style={{ width: '15%' }} />
+                <col style={{ width: '15%' }} />
+                <col style={{ width: '15%' }} />
+                <col style={{ width: '15%' }} />
+                <col style={{ width: '15%' }} />
+              </colgroup>
               <thead>
                 <tr className="border-b border-white/5">
                   <th className="text-left py-1 t-text-3 font-medium">玩家</th>
@@ -192,9 +200,9 @@ export const StockPurchaseStep: React.FC = () => {
                     </td>
                     <td className="py-1 text-right text-gold-400">{p.cash}</td>
                     {Object.keys(CARGO_NAMES).map(cargo => {
-                      const stock = p.stocks?.find((s: { cargoType: string }) => s.cargoType === cargo);
+                      const stock = p.stocks?.find((s: any) => (s.cargo || s.cargoType) === cargo);
                       const qty = stock?.quantity || 0;
-                      const mort = stock?.mortgagedCount || 0;
+                      const mort = stock?.mortgaged || stock?.mortgagedCount || 0;
                       return (
                         <td key={cargo} className="py-1 text-right t-text-2">
                           {qty > 0 ? qty : '-'}

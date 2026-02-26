@@ -25,7 +25,11 @@ export const AuctionPhase: React.FC = () => {
     ? gameState.players.find(p => p.id === auctionState.highestBidderId)
     : null;
   const minBid = highestBid + 1;
-  const maxBid = currentBidder?.cash ?? 0;
+
+  // maxBid from engine = cash + mortgage value (not just cash)
+  const bidAction = pendingAction?.validActions?.find((a: any) => a.type === 'BID');
+  const maxBid = Number(bidAction?.data?.maxBid) || (currentBidder?.cash ?? 0);
+  const cashOnly = currentBidder?.cash ?? 0;
 
   const passedIds = auctionState?.passedPlayerIds ?? [];
 
@@ -130,9 +134,14 @@ export const AuctionPhase: React.FC = () => {
               <h4 className="font-semibold text-sm text-ocean-400">你的回合</h4>
 
               <div>
-                <label className="block text-xs t-text-2 mb-1.5">
+                <label className="block text-xs t-text-2 mb-1">
                   出价金额 (最低 {minBid}, 最高 {maxBid})
                 </label>
+                {maxBid > cashOnly && (
+                  <p className="text-[9px] t-text-3 mb-1.5">
+                    💡 现金 {cashOnly} + 可抵押 {maxBid - cashOnly}，超出现金部分竞拍成功后自动抵押
+                  </p>
+                )}
                 <div className="flex items-center gap-3">
                   <input
                     type="range"
