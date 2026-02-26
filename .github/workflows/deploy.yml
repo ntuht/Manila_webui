@@ -28,19 +28,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
-      - name: Install root dependencies
+      # npm workspaces 配置了 packages/* + client，一次安装所有依赖
+      - name: Install all dependencies
         run: npm ci
 
       - name: Build engine
-        run: npm run build
-        working-directory: packages/engine
+        run: npm run build -w packages/engine
 
-      - name: Install client dependencies
-        run: npm ci
-        working-directory: client
-
-      - name: Build client
+      - name: Build client (skip tsc, only vite)
         run: npx vite build
         working-directory: client
         env:
