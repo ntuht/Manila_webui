@@ -1,19 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../../stores';
-import { PlayerList } from '../Player';
 import { GameBoard } from '../Board';
-import { GameStatus, ActionPanel, GameLog } from './';
+import { ActionBanner } from './ActionBanner';
+import { GameLog } from './GameLog';
 import { HarborMasterWizard } from '../HarborMaster';
 import { InvestmentRoundIndicator } from '../Investment';
 import { AuctionPhase, BidHistory } from '../Auction';
 import { InvestmentHistory } from '../InvestmentPhase';
-import { SailingPhase, DiceResults } from '../SailingPhase';
+import { DiceResults } from '../SailingPhase';
 import { SettlementPhase } from '../SettlementPhase';
+import { MyPlayerDashboard } from '../Player/MyPlayerDashboard';
+import { InvestmentSummary } from '../Board/InvestmentSummary';
+import { MobileInfoBar } from './MobileInfoBar';
 
 export const GameInterface: React.FC = () => {
   const { gameState, getEngineState } = useGameStore();
 
-  // Determine if harbor master actions should be shown to human
   const engineState = getEngineState();
   const pendingPlayerId = engineState?.pendingAction?.playerId;
   const pendingPlayer = engineState?.players.find(p => p.id === pendingPlayerId);
@@ -21,130 +23,192 @@ export const GameInterface: React.FC = () => {
   const isAIHarborMaster = gameState?.harborMaster && pendingPlayer?.isAI;
 
   return (
-    <div className="space-y-6">
-      {/* 港务长向导 — 只在人类玩家是港务长时显示 */}
+    <div className="animate-fade-in">
+      {/* 港务长向导 (modal overlay) */}
       {isHumanHarborMaster && <HarborMasterWizard />}
+      {/* 结算/游戏结束 (modal overlays) */}
+      {gameState?.phase === 'SETTLEMENT' && <SettlementPhase />}
+      {gameState?.phase === 'GAME_END' && engineState?.gameResult && <GameEndResult />}
 
-      {/* AI 港务长等待提示 */}
-      {isAIHarborMaster && (
-        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-center">
-          <p className="text-indigo-700 font-medium">
-            🤖 {pendingPlayer.name} (港务长) 正在执行行动...
-          </p>
-          <p className="text-sm text-indigo-500 mt-1">
-            {engineState?.pendingAction?.message}
-          </p>
+      {/* ===== 响应式布局 ===== */}
+      <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 items-start">
+
+        {/* ===== 左侧栏: 我的信息 + 对手 (桌面) ===== */}
+        <div className="w-[260px] shrink-0 space-y-3 hidden lg:block">
+          <MyPlayerDashboard />
         </div>
-      )}
 
-      {/* 投资轮次指示器 */}
-      {gameState?.investmentRound && <InvestmentRoundIndicator />}
+        {/* ===== 中间栏: 棋盘(上) + 操作(下) ===== */}
+        <div className="flex-1 min-w-0 space-y-2 w-full">
+          {/* 移动端: 阶段感知信息条 */}
+          <MobileInfoBar />
 
-      {/* 拍卖阶段 */}
-      {gameState?.phase === 'AUCTION' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <AuctionPhase />
-          </div>
-          <div className="lg:col-span-1">
-            <BidHistory />
-          </div>
-        </div>
-      )}
-
-      {/* 投资阶段 - 使用投资区域 */}
-      {gameState?.phase === 'INVESTMENT' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <InvestmentHistory />
-          </div>
-          <div className="lg:col-span-1">
-            <div className="text-sm text-gray-500">
-              投资区域在下方游戏棋盘中使用
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 航行阶段 */}
-      {gameState?.phase === 'SAILING' && (
-        <div className="space-y-6">
-          {/* 骰子结果显性显示 */}
-          {gameState.diceResults && gameState.diceResults.length > 0 && (
-            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-center text-gray-800 mb-4">
-                🎲 本轮骰子结果
-              </h3>
-              <DiceResults diceResults={gameState.diceResults} />
+          {/* AI 港务长等待 */}
+          {isAIHarborMaster && (
+            <div className="glass-light rounded-xl p-2 text-center">
+              <div className="inline-flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                <span className="text-xs t-text-2">
+                  🤖 {pendingPlayer.name} (港务长) 正在行动...
+                </span>
+              </div>
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <SailingPhase />
-            </div>
-            <div className="lg:col-span-1">
-              {gameState.diceResults && <DiceResults diceResults={gameState.diceResults} />}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 结算阶段 */}
-      {gameState?.phase === 'SETTLEMENT' && (
-        <SettlementPhase />
-      )}
-
-      {/* 游戏结束结果 */}
-      {gameState?.phase === 'GAME_END' && engineState?.gameResult && (
-        <GameEndResult />
-      )}
-
-      {/* 主游戏界面 */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* 左侧：玩家信息 */}
-        <div className="lg:col-span-1">
-          <div className="space-y-4">
-            <PlayerList />
-            <StockPrices />
-          </div>
-        </div>
-
-        {/* 中间：游戏棋盘 */}
-        <div className="lg:col-span-2">
+          {/* 棋盘 (船只轨道) — 始终在上方 */}
           <GameBoard />
+
+          {/* 骰子结果 — 显示2秒后自动隐藏 */}
+          <DiceToast diceResults={gameState?.diceResults} />
+
+          {/* 移动端: 投资阶段轮次指示器 */}
+          <div className="lg:hidden">
+            {gameState?.investmentRound && <InvestmentRoundIndicator />}
+          </div>
+
+          {/* 操作横幅 */}
+          <ActionBanner />
+
+          {/* 阶段详情 — 拍卖/投资/航行 */}
+          <PhaseDetail />
+
+          {/* 移动端: 投资历史 */}
+          <div className="lg:hidden">
+            {gameState?.phase === 'INVESTMENT' && <InvestmentHistory />}
+          </div>
         </div>
 
-        {/* 右侧：游戏信息 */}
-        <div className="lg:col-span-1">
-          <div className="space-y-4">
-            <GameStatus />
-            <ActionPanel />
-            <GameLog />
-          </div>
+        {/* ===== 右侧栏: 参考信息 (桌面) ===== */}
+        <div className="w-[240px] shrink-0 space-y-3 hidden lg:block">
+          <StockPrices />
+          {gameState?.investmentRound && <InvestmentRoundIndicator />}
+          {gameState?.phase === 'INVESTMENT' && <InvestmentHistory />}
+          <InvestmentSummary />
+          <GameLog />
         </div>
       </div>
+
+      {/* 移动端: 可折叠的参考信息抽屉 */}
+      <MobileDrawer gameState={gameState} />
     </div>
   );
 };
 
+/* ================================================================
+   DiceToast — shows dice results for 2 seconds then auto-hides
+   ================================================================ */
+const DiceToast: React.FC<{ diceResults?: { dice1: number; dice2: number; dice3: number; total: number; phase: number }[] }> = ({ diceResults }) => {
+  const [visible, setVisible] = useState(false);
+  const prevCountRef = useRef(0);
+
+  const count = diceResults?.length ?? 0;
+
+  useEffect(() => {
+    if (count > prevCountRef.current && count > 0) {
+      setVisible(true);
+      const timer = setTimeout(() => setVisible(false), 2000);
+      return () => clearTimeout(timer);
+    }
+    prevCountRef.current = count;
+  }, [count]);
+
+  // Also update ref when count changes without triggering
+  useEffect(() => {
+    prevCountRef.current = count;
+  }, [count]);
+
+  if (!visible || !diceResults || diceResults.length === 0) return null;
+
+  return (
+    <div className="glass-light rounded-xl p-2.5 border border-gold-400/10 animate-fade-in">
+      <DiceResults diceResults={diceResults} />
+    </div>
+  );
+};
+
+/* ================================================================
+   阶段详情 — 拍卖/投资/航行各阶段的专属 UI
+   ================================================================ */
+const PhaseDetail: React.FC = () => {
+  const { gameState } = useGameStore();
+  if (!gameState) return null;
+
+  switch (gameState.phase) {
+    case 'AUCTION':
+      return (
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
+          <div className="xl:col-span-2"><AuctionPhase /></div>
+          <div className="xl:col-span-1"><BidHistory /></div>
+        </div>
+      );
+
+    case 'INVESTMENT':
+      return null; // round indicator + history are in right sidebar
+
+    case 'SAILING':
+      return null;
+
+    default:
+      return null;
+  }
+};
+
+/* ================================================================
+   MobileDrawer — collapsible info drawer for mobile
+   Shows player dashboard + extra info without scrolling away
+   ================================================================ */
+const MobileDrawer: React.FC<{ gameState: any }> = ({ gameState }) => {
+  const [open, setOpen] = useState(false);
+  if (!gameState) return null;
+
+  return (
+    <div className="lg:hidden mt-3">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium t-text-2"
+        style={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+      >
+        <span>📋 更多信息</span>
+        <span className="t-text-m text-[10px]">{open ? '收起 ▲' : '展开 ▼'}</span>
+      </button>
+      {open && (
+        <div className="mt-2 space-y-3 animate-fade-in">
+          <MyPlayerDashboard />
+          <StockPrices />
+          <InvestmentSummary />
+          <GameLog />
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ================================================================
+   股票价格面板
+   ================================================================ */
 const CARGO_NAMES_MAP: Record<string, string> = {
   JADE: '翡翠', SILK: '丝绸', GINSENG: '人参', NUTMEG: '肉豆蔻',
+};
+const CARGO_COLORS: Record<string, string> = {
+  JADE: 'text-emerald-400', SILK: 'text-indigo-400', GINSENG: 'text-amber-400', NUTMEG: 'text-violet-400',
 };
 
 const StockPrices: React.FC = () => {
   const { gameState } = useGameStore();
-
   if (!gameState) return null;
 
   return (
     <div className="card">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">股票价格</h3>
-      <div className="space-y-2">
+      <h3 className="text-xs font-semibold t-text-2 mb-2">📊 股票价格</h3>
+      <div className="space-y-1">
         {Object.entries(gameState.stockPrices).map(([cargo, price]) => (
           <div key={cargo} className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{CARGO_NAMES_MAP[cargo] || cargo}</span>
-            <span className="font-medium text-green-600">{price} 元</span>
+            <span className={`text-xs ${CARGO_COLORS[cargo] || 'text-slate-400'}`}>
+              {CARGO_NAMES_MAP[cargo] || cargo}
+            </span>
+            <span className="text-xs font-medium text-gold-400">
+              {price} 元 {Number(price) >= 30 ? '⭐' : ''}
+            </span>
           </div>
         ))}
       </div>
@@ -152,6 +216,9 @@ const StockPrices: React.FC = () => {
   );
 };
 
+/* ================================================================
+   游戏结束结果 (overlay)
+   ================================================================ */
 const GameEndResult: React.FC = () => {
   const { getEngineState, endGame } = useGameStore();
   const engineState = getEngineState();
@@ -165,62 +232,52 @@ const GameEndResult: React.FC = () => {
   const medalEmoji = ['🥇', '🥈', '🥉', '4️⃣'];
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 50,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      backgroundColor: 'rgba(0,0,0,0.6)',
-      backdropFilter: 'blur(6px)',
-    }}>
-      <div style={{
-        background: 'linear-gradient(to bottom, #fefce8, white)', borderRadius: 16, padding: 32,
-        maxWidth: 560, width: '90%',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-      }}>
-        <h2 style={{ textAlign: 'center', fontSize: 26, fontWeight: 800, marginBottom: 8 }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center overlay-blur">
+      <div className="card-light rounded-2xl p-6 max-w-xl w-[90%] shadow-2xl shadow-black/40 animate-bounce-in">
+        <h2 className="text-center text-2xl font-black text-gold-gradient font-display mb-2">
           🏆 游戏结束
         </h2>
-        <p style={{ textAlign: 'center', fontSize: 14, color: '#666', marginBottom: 24 }}>
+        <p className="text-center text-xs t-text-3 mb-5">
           共进行 {result.totalRounds} 轮
         </p>
 
-        {/* 排名表格 */}
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 24 }}>
-          <thead>
-            <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-              <th style={{ padding: '8px 4px', textAlign: 'left', fontSize: 13, color: '#6b7280' }}>排名</th>
-              <th style={{ padding: '8px 4px', textAlign: 'left', fontSize: 13, color: '#6b7280' }}>玩家</th>
-              <th style={{ padding: '8px 4px', textAlign: 'right', fontSize: 13, color: '#6b7280' }}>现金</th>
-              <th style={{ padding: '8px 4px', textAlign: 'right', fontSize: 13, color: '#6b7280' }}>股票</th>
-              <th style={{ padding: '8px 4px', textAlign: 'right', fontSize: 13, color: '#6b7280' }}>罚金</th>
-              <th style={{ padding: '8px 4px', textAlign: 'right', fontSize: 13, color: '#6b7280', fontWeight: 700 }}>总分</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rankings.map((r: { playerId: string; name: string; cash: number; stockValue: number; mortgagePenalty: number; totalScore: number; rank: number }) => (
-              <tr key={r.playerId} style={{
-                borderBottom: '1px solid #f3f4f6',
-                background: r.rank === 1 ? '#fef9c3' : 'transparent',
-              }}>
-                <td style={{ padding: '10px 4px', fontSize: 18 }}>{medalEmoji[r.rank - 1] || r.rank}</td>
-                <td style={{ padding: '10px 4px', fontWeight: 600, fontSize: 14 }}>{r.name}</td>
-                <td style={{ padding: '10px 4px', textAlign: 'right', fontSize: 14 }}>{r.cash}</td>
-                <td style={{ padding: '10px 4px', textAlign: 'right', fontSize: 14, color: '#16a34a' }}>{r.stockValue}</td>
-                <td style={{ padding: '10px 4px', textAlign: 'right', fontSize: 14, color: r.mortgagePenalty > 0 ? '#dc2626' : '#999' }}>
-                  {r.mortgagePenalty > 0 ? `-${r.mortgagePenalty}` : '0'}
-                </td>
-                <td style={{ padding: '10px 4px', textAlign: 'right', fontSize: 16, fontWeight: 800 }}>{r.totalScore}</td>
+        <div className="mb-5 overflow-hidden rounded-xl border border-white/10">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/10 bg-white/5">
+                <th className="px-3 py-2 text-left text-[10px] t-text-3 font-medium">排名</th>
+                <th className="px-3 py-2 text-left text-[10px] t-text-3 font-medium">玩家</th>
+                <th className="px-3 py-2 text-right text-[10px] t-text-3 font-medium">现金</th>
+                <th className="px-3 py-2 text-right text-[10px] t-text-3 font-medium">股票</th>
+                <th className="px-3 py-2 text-right text-[10px] t-text-3 font-medium">罚金</th>
+                <th className="px-3 py-2 text-right text-[10px] t-text-3 font-bold">总分</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rankings.map((r: { playerId: string; name: string; cash: number; stockValue: number; mortgagePenalty: number; totalScore: number; rank: number }) => (
+                <tr key={r.playerId} className={`border-b border-white/5 ${r.rank === 1 ? 'bg-gold-400/5' : ''}`}>
+                  <td className="px-3 py-2.5 text-base">{medalEmoji[r.rank - 1] || r.rank}</td>
+                  <td className="px-3 py-2.5 font-semibold text-xs t-text">{r.name}</td>
+                  <td className="px-3 py-2.5 text-right text-xs t-text-2">{r.cash}</td>
+                  <td className="px-3 py-2.5 text-right text-xs text-emerald-400">{r.stockValue}</td>
+                  <td className="px-3 py-2.5 text-right text-xs">
+                    <span className={r.mortgagePenalty > 0 ? 'text-red-400' : 'text-slate-600'}>
+                      {r.mortgagePenalty > 0 ? `-${r.mortgagePenalty}` : '0'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 text-right text-sm font-bold text-gold-400">{r.totalScore}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-        {/* 最终股价 */}
-        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: 12, marginBottom: 20 }}>
-          <h4 style={{ fontSize: 13, fontWeight: 600, color: '#166534', marginBottom: 6 }}>📊 最终股价</h4>
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <div className="glass-light rounded-xl p-3 mb-5">
+          <h4 className="text-xs font-semibold text-emerald-400 mb-2">📊 最终股价</h4>
+          <div className="flex gap-4 flex-wrap">
             {engineState && Object.entries(engineState.stockPrices).map(([cargo, price]) => (
-              <span key={cargo} style={{ fontSize: 14 }}>
-                <strong style={{ color: price >= 30 ? '#dc2626' : '#333' }}>
+              <span key={cargo} className="text-xs t-text-2">
+                <strong className={`${CARGO_COLORS[cargo] || 'text-slate-400'}`}>
                   {CARGO_NAMES_MAP[cargo] || cargo}
                 </strong>: {String(price)}元
                 {Number(price) >= 30 && ' ⭐'}
@@ -229,16 +286,10 @@ const GameEndResult: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ textAlign: 'center' }}>
+        <div className="text-center">
           <button
             onClick={() => endGame()}
-            style={{
-              background: '#2563eb', color: 'white', border: 'none', borderRadius: 10,
-              padding: '12px 40px', fontSize: 16, fontWeight: 600,
-              cursor: 'pointer', transition: 'all 0.2s',
-            }}
-            onMouseOver={e => (e.currentTarget.style.opacity = '0.85')}
-            onMouseOut={e => (e.currentTarget.style.opacity = '1')}
+            className="px-8 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-ocean-500 to-ocean-600 text-white hover:shadow-glow-ocean transition-all duration-200 active:scale-[0.97]"
           >
             🏠 返回大厅
           </button>

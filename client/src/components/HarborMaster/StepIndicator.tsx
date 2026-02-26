@@ -18,27 +18,22 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep }) => 
     <div className="flex items-center justify-between">
       {steps.map((step, index) => (
         <div key={step.key} className="flex items-center">
-          <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-            index <= currentIndex
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-600'
-          }`}>
+          <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-medium ${index <= currentIndex
+              ? 'bg-ocean-500/20 text-ocean-400'
+              : 'bg-white/5 text-slate-600'
+            }`}>
             {index + 1}
           </div>
-          <div className="ml-3">
-            <div className={`text-sm font-medium ${
-              index <= currentIndex ? 'text-gray-900' : 'text-gray-500'
-            }`}>
+          <div className="ml-2">
+            <div className={`text-xs font-medium ${index <= currentIndex ? 'text-slate-200' : 'text-slate-600'
+              }`}>
               {step.label}
             </div>
-            <div className="text-xs text-gray-500">
-              {step.description}
-            </div>
+            <div className="text-[10px] text-slate-500">{step.description}</div>
           </div>
           {index < steps.length - 1 && (
-            <div className={`flex-1 h-0.5 mx-4 ${
-              index < currentIndex ? 'bg-blue-600' : 'bg-gray-200'
-            }`} />
+            <div className={`flex-1 h-px mx-3 ${index < currentIndex ? 'bg-ocean-500/30' : 'bg-white/5'
+              }`} />
           )}
         </div>
       ))}

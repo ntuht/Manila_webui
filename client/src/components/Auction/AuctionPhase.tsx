@@ -12,17 +12,14 @@ export const AuctionPhase: React.FC = () => {
 
   if (!gameState) return null;
 
-  // Get auction info from engine state
   const engineState = getEngineState();
   const pendingAction = engineState?.pendingAction;
   const auctionState = engineState?.auctionState;
 
-  // Current bidder is from pendingAction, not currentPlayerIndex
   const currentBidderId = pendingAction?.playerId;
   const currentBidder = gameState.players.find(p => p.id === currentBidderId);
   const isHumanTurn = currentBidder && !currentBidder.isAI;
 
-  // Auction info
   const highestBid = auctionState?.highestBid ?? 0;
   const highestBidder = auctionState?.highestBidderId
     ? gameState.players.find(p => p.id === auctionState.highestBidderId)
@@ -30,7 +27,6 @@ export const AuctionPhase: React.FC = () => {
   const minBid = highestBid + 1;
   const maxBid = currentBidder?.cash ?? 0;
 
-  // Players who passed
   const passedIds = auctionState?.passedPlayerIds ?? [];
 
   const handleBid = () => {
@@ -46,11 +42,8 @@ export const AuctionPhase: React.FC = () => {
 
   const handlePass = () => {
     if (currentBidderId) {
-      // makeBid with amount <= 0 triggers PASS_AUCTION
       const result = makeBid(currentBidderId, 0);
-      if (!result.success) {
-        alert(result.error || '放弃失败');
-      }
+      if (!result.success) alert(result.error || '放弃失败');
     }
   };
 
@@ -65,51 +58,42 @@ export const AuctionPhase: React.FC = () => {
     }
   };
 
-  // Update minBid when it becomes the bidder's turn  
-  if (bidAmount < minBid) {
-    setBidAmount(minBid);
-  }
+  if (bidAmount < minBid) setBidAmount(minBid);
 
   return (
-    <div className="space-y-6">
-      <Card title="拍卖阶段 — 竞拍港务长" className="p-6">
+    <div className="space-y-4">
+      <Card title="拍卖阶段 — 竞拍港务长" className="p-5">
         <div className="space-y-4">
           {/* 回合信息 */}
           <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">
-                轮次 {gameState.round} / {gameState.gameConfig.rounds}
-              </h3>
-            </div>
-            <div className="text-right">
-              {pendingAction?.message && (
-                <p className="text-sm text-indigo-600 font-medium">
-                  {pendingAction.message}
-                </p>
-              )}
-            </div>
+            <h3 className="text-sm font-semibold t-text">
+              轮次 {gameState.round} / {gameState.gameConfig.rounds}
+            </h3>
+            {pendingAction?.message && (
+              <p className="text-xs text-ocean-400 font-medium">{pendingAction.message}</p>
+            )}
           </div>
 
           {/* 当前最高出价 */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="glass-light rounded-xl p-4">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-sm text-gray-600">当前最高出价</span>
-                <div className="text-2xl font-bold text-yellow-700">
-                  {highestBid > 0 ? highestBid : '无'}
+                <span className="text-[10px] t-text-3 uppercase tracking-wider">最高出价</span>
+                <div className="text-2xl font-bold text-gold-400 font-display">
+                  {highestBid > 0 ? highestBid : '—'}
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-sm text-gray-600">最高出价者</span>
-                <div className="text-lg font-semibold text-yellow-800">
-                  {highestBidder?.name ?? '无'}
+                <span className="text-[10px] t-text-3 uppercase tracking-wider">出价者</span>
+                <div className="text-base font-semibold t-text">
+                  {highestBidder?.name ?? '—'}
                 </div>
               </div>
             </div>
           </div>
 
           {/* 玩家状态 */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {gameState.players.map(player => {
               const isPassed = passedIds.includes(player.id);
               const isCurrent = player.id === currentBidderId;
@@ -118,45 +102,45 @@ export const AuctionPhase: React.FC = () => {
               return (
                 <div
                   key={player.id}
-                  className={`rounded-lg p-3 text-center text-sm ${isCurrent
-                      ? 'bg-blue-100 border-2 border-blue-400 ring-2 ring-blue-200'
-                      : isPassed
-                        ? 'bg-gray-100 text-gray-400 line-through'
-                        : isHighest
-                          ? 'bg-yellow-50 border border-yellow-300'
-                          : 'bg-gray-50 border border-gray-200'
+                  className={`rounded-lg p-2.5 text-center text-xs transition-all ${isCurrent
+                    ? 'bg-ocean-500/15 border border-ocean-500/30 ring-1 ring-ocean-500/20'
+                    : isPassed
+                      ? 'bg-white/3 t-text-m line-through border border-white/5'
+                      : isHighest
+                        ? 'bg-gold-400/10 border border-gold-400/20'
+                        : ''
                     }`}
                 >
-                  <div className="font-medium">
+                  <div className="font-medium t-text">
                     {player.name} {player.isAI ? '🤖' : ''}
                   </div>
-                  <div className="text-xs text-gray-500">
-                    现金: {player.cash}
+                  <div className="text-[10px] t-text-3 mt-0.5">
+                    💰 {player.cash}
                   </div>
-                  {isPassed && <div className="text-xs text-red-400">已放弃</div>}
-                  {isCurrent && <div className="text-xs text-blue-600 font-bold">⬅ 当前</div>}
+                  {isPassed && <div className="text-[10px] text-red-400/60 mt-0.5">已放弃</div>}
+                  {isCurrent && <div className="text-[10px] text-ocean-400 font-bold mt-0.5">⬅ 当前</div>}
                 </div>
               );
             })}
           </div>
 
-          {/* 出价控制区 — 只在人类玩家的回合显示 */}
+          {/* 出价控制区 */}
           {isHumanTurn ? (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
-              <h4 className="font-semibold text-blue-800">你的回合</h4>
+            <div className="glass-light rounded-xl p-4 space-y-3">
+              <h4 className="font-semibold text-sm text-ocean-400">你的回合</h4>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs t-text-2 mb-1.5">
                   出价金额 (最低 {minBid}, 最高 {maxBid})
                 </label>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-3">
                   <input
                     type="range"
                     min={minBid}
                     max={Math.max(minBid, maxBid)}
                     value={bidAmount}
                     onChange={(e) => setBidAmount(parseInt(e.target.value))}
-                    className="flex-1"
+                    className="flex-1 accent-ocean-500"
                   />
                   <input
                     type="number"
@@ -164,23 +148,26 @@ export const AuctionPhase: React.FC = () => {
                     max={maxBid}
                     value={bidAmount}
                     onChange={(e) => setBidAmount(Math.max(minBid, parseInt(e.target.value) || minBid))}
-                    className="w-20 px-2 py-1 border border-gray-300 rounded text-center"
+                    className="w-16 px-2 py-1 border rounded text-center text-sm t-text focus:outline-none focus:ring-1 focus:ring-ocean-500/50"
+                    style={{ background: 'var(--color-input-bg)', borderColor: 'var(--color-card-border)' }}
                   />
                 </div>
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex gap-2">
                 <Button
                   onClick={handleBid}
                   disabled={bidAmount < minBid || bidAmount > maxBid}
                   className="flex-1"
+                  size="sm"
                 >
                   出价 {bidAmount}
                 </Button>
                 <Button
-                  variant="secondary"
+                  variant="ghost"
                   onClick={handlePass}
                   className="flex-1"
+                  size="sm"
                 >
                   放弃竞拍
                 </Button>
@@ -188,27 +175,27 @@ export const AuctionPhase: React.FC = () => {
 
               <Button
                 variant="secondary"
+                size="sm"
                 onClick={() => setShowMortgageModal(true)}
                 disabled={currentBidder.stocks.length === 0}
-                className="w-full text-sm"
+                className="w-full text-xs"
               >
-                抵押股票增加现金
+                📜 抵押股票增加现金
               </Button>
             </div>
           ) : (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-              <p className="text-gray-500">
-                等待 {currentBidder?.name ?? 'AI'} 出价中...
-              </p>
-              {currentBidder?.isAI && (
-                <p className="text-sm text-gray-400 mt-1">🤖 AI 正在思考</p>
-              )}
+            <div className="glass-light rounded-xl p-4 text-center">
+              <div className="inline-flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-ocean-400 animate-pulse" />
+                <span className="text-sm t-text-2">
+                  等待 {currentBidder?.name ?? 'AI'} 出价...
+                </span>
+              </div>
             </div>
           )}
         </div>
       </Card>
 
-      {/* 抵押股票模态框 */}
       <MortgageStockModal
         isOpen={showMortgageModal}
         onClose={() => setShowMortgageModal(false)}

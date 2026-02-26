@@ -7,9 +7,9 @@ export const PlayerList: React.FC = () => {
   const currentPlayer = getCurrentPlayer();
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">玩家</h3>
-      <div className="space-y-3">
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold text-slate-200">玩家</h3>
+      <div className="space-y-2">
         {players.map(player => (
           <PlayerCard
             key={player.id}

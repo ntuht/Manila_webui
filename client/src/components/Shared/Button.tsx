@@ -23,23 +23,23 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   type = 'button'
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-  
-  const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-    ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500'
+  const base = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-navy-900 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97]';
+
+  const variants: Record<string, string> = {
+    primary: 'bg-gradient-to-r from-ocean-500 to-ocean-600 text-white hover:shadow-glow-ocean focus:ring-ocean-500',
+    secondary: 'border t-text hover:opacity-80 focus:ring-ocean-500/30',
+    danger: 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-lg focus:ring-red-500',
+    ghost: 't-text-2 hover:opacity-80 focus:ring-ocean-500/20',
   };
-  
-  const sizeClasses = {
+
+  const sizes: Record<string, string> = {
     sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg'
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base',
   };
-  
-  const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
-  
+
+  const classes = `${base} ${variants[variant]} ${sizes[size]} ${className}`;
+
   return (
     <button
       type={type}

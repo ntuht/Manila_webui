@@ -13,49 +13,37 @@ export const PlayerBidStatus: React.FC<PlayerBidStatusProps> = ({
   isAuctionWinner
 }) => {
   return (
-    <div className={`p-3 rounded-lg border-2 transition-all ${
-      isCurrentPlayer
-        ? 'border-blue-500 bg-blue-50'
+    <div className={`p-3 rounded-xl border transition-all ${isCurrentPlayer
+        ? 'border-ocean-500/30 bg-ocean-500/10'
         : isAuctionWinner
-        ? 'border-yellow-500 bg-yellow-50'
-        : 'border-gray-200 bg-gray-50'
-    }`}>
+          ? 'border-gold-400/30 bg-gold-400/10'
+          : 'border-white/10 bg-white/5'
+      }`}>
       <div className="flex items-center justify-between">
         <div>
-          <h4 className={`font-medium ${
-            isCurrentPlayer ? 'text-blue-900' : 
-            isAuctionWinner ? 'text-yellow-900' : 'text-gray-900'
-          }`}>
+          <h4 className={`text-xs font-medium ${isCurrentPlayer ? 'text-ocean-400' :
+              isAuctionWinner ? 'text-gold-400' : 'text-slate-200'
+            }`}>
             {player.name}
           </h4>
-          <p className="text-sm text-gray-600">
-            现金: {player.cash}
-          </p>
+          <p className="text-[10px] text-slate-500">💰 {player.cash}</p>
         </div>
         <div className="text-right">
           {isCurrentPlayer && (
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-              当前玩家
-            </span>
+            <span className="text-[9px] bg-ocean-500/15 text-ocean-400 px-1.5 py-0.5 rounded">当前</span>
           )}
           {isAuctionWinner && (
-            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-              港务长
-            </span>
+            <span className="text-[9px] bg-gold-400/15 text-gold-400 px-1.5 py-0.5 rounded">港务长</span>
           )}
         </div>
       </div>
-      
-      {/* 股票信息 */}
+
       {player.stocks.length > 0 && (
-        <div className="mt-2">
-          <div className="text-xs text-gray-500 mb-1">股票:</div>
+        <div className="mt-1.5">
+          <div className="text-[10px] text-slate-600 mb-0.5">股票:</div>
           <div className="flex flex-wrap gap-1">
             {player.stocks.map((stock, index) => (
-              <div
-                key={index}
-                className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"
-              >
+              <div key={index} className="text-[10px] bg-white/5 text-slate-400 px-1.5 py-0.5 rounded">
                 {stock.cargoType} × {stock.quantity}
               </div>
             ))}

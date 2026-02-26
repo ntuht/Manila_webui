@@ -5,6 +5,10 @@ const CARGO_NAMES: Record<string, string> = {
   JADE: '翡翠', SILK: '丝绸', GINSENG: '人参', NUTMEG: '肉豆蔻',
 };
 
+const CARGO_DOTS: Record<string, string> = {
+  JADE: 'bg-emerald-500', SILK: 'bg-indigo-500', GINSENG: 'bg-amber-500', NUTMEG: 'bg-violet-500',
+};
+
 const SLOT_NAMES: Record<string, string> = {
   'pirate-captain': '海盗船长',
   'pirate-crew': '海盗船员',
@@ -21,7 +25,6 @@ const SLOT_NAMES: Record<string, string> = {
 
 function formatSlotName(slotId: string): string {
   if (SLOT_NAMES[slotId]) return SLOT_NAMES[slotId];
-  // crew-JADE-0 → 翡翠船员1
   const crewMatch = slotId.match(/^crew-(\w+)-(\d+)$/);
   if (crewMatch) {
     const cargo = crewMatch[1].toUpperCase();
@@ -45,59 +48,51 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   onSelect
 }) => {
   const handleClick = () => {
-    if (onSelect) {
-      onSelect(player.id);
-    }
+    if (onSelect) onSelect(player.id);
   };
 
   return (
     <div
-      className={`card cursor-pointer transition-all ${isCurrentPlayer ? 'ring-2 ring-blue-500 bg-blue-50' : ''
-        } ${!isActive ? 'opacity-60' : 'hover:shadow-md'} ${onSelect ? 'hover:scale-105' : ''
-        }`}
+      className={[
+        'card transition-all duration-200',
+        isCurrentPlayer ? 'ring-2 ring-gold-400/50 border-gold-400/20 animate-pulse-glow' : '',
+        !isActive ? 'opacity-50' : '',
+        onSelect ? 'hover:scale-[1.02] cursor-pointer' : '',
+      ].join(' ')}
       onClick={onSelect ? handleClick : undefined}
     >
+      {/* 头部 */}
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center space-x-2">
-          <h4 className="font-semibold text-lg">{player.name}</h4>
+        <div className="flex items-center gap-2">
+          <h4 className="font-semibold text-sm text-slate-100">{player.name}</h4>
           {player.isAI && (
-            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-              AI
-            </span>
+            <span className="text-[10px] bg-white/10 text-slate-400 px-1.5 py-0.5 rounded">AI</span>
           )}
           {isCurrentPlayer && (
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-              当前玩家
-            </span>
+            <span className="text-[10px] bg-gold-400/15 text-gold-400 px-1.5 py-0.5 rounded font-medium">当前</span>
           )}
         </div>
         <div className="text-right">
-          <div className="text-lg font-bold text-green-600">
-            {player.cash}
-          </div>
-          <div className="text-xs text-gray-500">现金</div>
+          <div className="text-base font-bold text-gold-400">{player.cash}</div>
+          <div className="text-[10px] text-slate-500">现金</div>
         </div>
       </div>
 
-      {/* 股票信息 */}
+      {/* 股票 */}
       {player.stocks.length > 0 && (
-        <div className="mb-3">
-          <h5 className="text-sm font-medium text-gray-700 mb-2">股票</h5>
+        <div className="mb-2.5">
+          <h5 className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-1.5">股票</h5>
           <div className="space-y-1">
             {player.stocks.map((stock, index) => (
-              <div key={index} className="flex items-center justify-between text-sm">
-                <div className="flex items-center space-x-2">
-                  <div className={`w-3 h-3 rounded-full ${stock.cargoType === 'JADE' ? 'bg-cargo-jade' :
-                      stock.cargoType === 'SILK' ? 'bg-cargo-silk' :
-                        stock.cargoType === 'GINSENG' ? 'bg-cargo-ginseng' :
-                          'bg-cargo-nutmeg'
-                    }`}></div>
-                  <span className="text-gray-600">{CARGO_NAMES[stock.cargoType] || stock.cargoType}</span>
+              <div key={index} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5">
+                  <div className={`w-2 h-2 rounded-full ${CARGO_DOTS[stock.cargoType] || 'bg-gray-500'}`} />
+                  <span className="text-slate-300">{CARGO_NAMES[stock.cargoType] || stock.cargoType}</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <span className="font-medium">{stock.quantity}</span>
+                <div className="flex items-center gap-1">
+                  <span className="font-medium text-slate-200">{stock.quantity}</span>
                   {stock.isMortgaged && (
-                    <span className="text-xs text-red-600">(抵押)</span>
+                    <span className="text-[10px] text-red-400">(抵押)</span>
                   )}
                 </div>
               </div>
@@ -106,15 +101,15 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
         </div>
       )}
 
-      {/* 投资信息 */}
+      {/* 投资 */}
       {player.investments.length > 0 && (
         <div>
-          <h5 className="text-sm font-medium text-gray-700 mb-2">投资</h5>
+          <h5 className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-1.5">投资</h5>
           <div className="flex flex-wrap gap-1">
             {player.investments.map((investment, index) => (
               <span
                 key={index}
-                className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800"
+                className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-ocean-500/10 text-ocean-400 border border-ocean-500/10"
               >
                 {formatSlotName(investment.slotId)}
               </span>
@@ -125,7 +120,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
 
       {/* 空状态 */}
       {player.stocks.length === 0 && player.investments.length === 0 && (
-        <div className="text-center text-gray-500 text-sm py-2">
+        <div className="text-center text-slate-600 text-xs py-2">
           暂无股票和投资
         </div>
       )}

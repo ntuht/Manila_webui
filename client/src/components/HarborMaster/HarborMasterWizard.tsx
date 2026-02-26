@@ -10,26 +10,23 @@ export const HarborMasterWizard: React.FC = () => {
 
   if (!harborMaster) return null;
 
-  // The engine has two phases for harbor master:
-  // 1. BUY_STOCK (or SKIP) — buy one stock
-  // 2. PLACE_SHIPS — select 3 cargos and set positions (combined)
   const currentStep = harborMaster.currentStep;
 
   return (
     <Modal isOpen={true} size="lg" title="港务长行动" onClose={() => { }}>
-      <div className="space-y-6">
-        {/* 步骤指示器 — simplified to 2 steps */}
-        <div className="flex items-center justify-center space-x-4">
-          <div className={`px-4 py-2 rounded-full text-sm font-medium ${currentStep === 'BUY_STOCK'
-            ? 'bg-blue-500 text-white'
-            : 'bg-green-100 text-green-700'
+      <div className="space-y-5">
+        {/* 步骤指示器 */}
+        <div className="flex items-center justify-center gap-3">
+          <div className={`px-4 py-1.5 rounded-full text-xs font-medium ${currentStep === 'BUY_STOCK'
+            ? 'bg-ocean-500/20 text-ocean-400 ring-1 ring-ocean-500/30'
+            : 'bg-emerald-500/15 text-emerald-400'
             }`}>
             ① 购买股票
           </div>
-          <div className="text-gray-400">→</div>
-          <div className={`px-4 py-2 rounded-full text-sm font-medium ${currentStep === 'SET_POSITIONS'
-            ? 'bg-blue-500 text-white'
-            : 'bg-gray-100 text-gray-500'
+          <span className="t-text-m">→</span>
+          <div className={`px-4 py-1.5 rounded-full text-xs font-medium ${currentStep === 'SET_POSITIONS'
+            ? 'bg-ocean-500/20 text-ocean-400 ring-1 ring-ocean-500/30'
+            : 't-text-3'
             }`}>
             ② 选择货物 & 设置位置
           </div>
