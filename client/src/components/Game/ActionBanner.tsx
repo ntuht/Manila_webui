@@ -8,6 +8,7 @@
 import React from 'react';
 import { useGameStore } from '../../stores';
 import { Button } from '../Shared/Button';
+import { NavigatorPanel } from './NavigatorPanel';
 
 const CARGO_CN: Record<string, string> = {
     JADE: '翡翠', SILK: '丝绸', GINSENG: '人参', NUTMEG: '肉豆蔻',
@@ -118,37 +119,7 @@ export const ActionBanner: React.FC = () => {
                 }
 
                 if (pendingAction.actionType === 'USE_NAVIGATOR' || pendingAction.actionType === 'SKIP_NAVIGATOR') {
-                    return (
-                        <div className="space-y-2">
-                            <p className="text-xs text-slate-300 text-center font-medium">🧭 领航员决策</p>
-                            <div className="flex flex-wrap justify-center gap-1.5">
-                                {pendingAction.validActions.map((action, idx) => {
-                                    let label = '';
-                                    if (action.type === 'SKIP_NAVIGATOR') {
-                                        label = '跳过领航员';
-                                    } else {
-                                        const moves = action.data.moves as Array<{ cargo: string; delta: number }> | undefined;
-                                        if (moves && moves.length > 0) {
-                                            label = `使用: ${moves.map(m => `${m.cargo} ${m.delta > 0 ? '+' : ''}${m.delta}`).join(', ')}`;
-                                        } else {
-                                            label = `使用: ${String(action.data.cargo)} ${Number(action.data.delta) > 0 ? '+' : ''}${String(action.data.delta)}`;
-                                        }
-                                    }
-                                    return (
-                                        <Button
-                                            key={idx}
-                                            variant={action.type === 'SKIP_NAVIGATOR' ? 'ghost' : 'primary'}
-                                            size="sm"
-                                            onClick={() => useGameStore.getState().dispatchAction(action)}
-                                            className="text-xs"
-                                        >
-                                            {label}
-                                        </Button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    );
+                    return <NavigatorPanel pendingAction={pendingAction} />;
                 }
 
                 if (pendingAction.actionType === 'PIRATE_BOARD') {
