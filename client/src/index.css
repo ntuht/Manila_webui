@@ -61,6 +61,16 @@
   --color-crew-border: rgba(0, 0, 0, 0.06);
 
   --shadow-glow: 0 4px 20px rgba(14, 165, 233, 0.08);
+
+  /* ── 玩家颜色 ── */
+  --player-red: #ef4444;
+  --player-red-border: #dc2626;
+  --player-blue: #3b82f6;
+  --player-blue-border: #2563eb;
+  --player-green: #22c55e;
+  --player-green-border: #16a34a;
+  --player-orange: #f97316;
+  --player-orange-border: #ea580c;
 }
 
 .dark {

@@ -221,7 +221,7 @@ export function getStrategy(name: string): AIStrategy {
 }
 
 export const AI_STRATEGY_OPTIONS = [
-  { value: 'onnx', label: 'ONNX 神经网络 (推荐)' },
+  { value: 'onnx', label: '智能 (推荐)' },
   { value: 'greedy', label: '贪婪策略' },
   { value: 'conservative', label: '保守策略' },
   { value: 'random', label: '随机策略' },

@@ -12,7 +12,7 @@ import type {
     UIGameState, UIPlayerState, UIShipState, UIStockHolding,
     UIInvestment, UICrewMember, UIPhase, UIDiceResult,
     UIHarborMasterState, UIInvestmentRoundState, UIGameFlow,
-    UIStockPrices, HarborMasterPhase, UIGameConfig,
+    UIStockPrices, HarborMasterPhase, UIGameConfig, PlayerColor,
 } from '../types/uiTypes';
 
 // ==================== Main Adapter ====================
@@ -24,10 +24,11 @@ export function deriveUIState(
     engine: GameState,
     gameConfig: UIGameConfig,
     gameId: string = 'local',
+    playerColors: Record<string, PlayerColor> = {},
 ): UIGameState {
     const uiPhase = mapPhase(engine);
     const players = engine.players.map(p =>
-        derivePlayer(p, engine, uiPhase)
+        derivePlayer(p, engine, uiPhase, playerColors[p.id] ?? 'red')
     );
     const ships = engine.ships.map(s => deriveShip(s, engine));
     const diceResults = deriveDiceResults(engine);
@@ -116,6 +117,7 @@ function derivePlayer(
     player: { id: string; name: string; cash: number; stocks: { cargo: CargoType; quantity: number; mortgaged: number }[]; isAI: boolean },
     engine: GameState,
     uiPhase: UIPhase,
+    color: PlayerColor = 'red',
 ): UIPlayerState {
     // Extract per-player investments from the global list
     const playerInvestments: UIInvestment[] = engine.investments
@@ -147,6 +149,7 @@ function derivePlayer(
         id: player.id,
         name: player.name,
         cash: player.cash,
+        color,
         stocks,
         investments: playerInvestments,
         isActive: true,

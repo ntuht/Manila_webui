@@ -98,7 +98,51 @@ export const ActionBanner: React.FC = () => {
                 if (!isHumanTurn) {
                     return <p className="text-xs t-text-3 text-center">等待 AI 投资...</p>;
                 }
-                return <InvestmentActions pendingAction={pendingAction} pendingPlayer={pendingPlayer} selectInvestment={selectInvestment} />;
+                return (
+                    <div className="space-y-2">
+                        {/* Desktop: hint to use board, Mobile: full button list */}
+                        <div className="hidden lg:block text-center">
+                            <p className="text-xs t-text-2">
+                                👆 点击上方棋盘槽位进行投资
+                                <span className="text-gold-400 font-medium ml-2">💰 {pendingPlayer?.cash}</span>
+                            </p>
+                        </div>
+                        <div className="lg:hidden">
+                            <InvestmentActions pendingAction={pendingAction} pendingPlayer={pendingPlayer} selectInvestment={selectInvestment} />
+                        </div>
+                        {/* Desktop: skip + mortgage buttons */}
+                        {(() => {
+                            const mortgageActions = pendingAction?.validActions?.filter((a: any) => a.type === 'MORTGAGE_STOCK') ?? [];
+                            const skipAction = pendingAction?.validActions?.find((a: any) => a.type === 'SKIP_INVEST');
+                            if (mortgageActions.length === 0 && !skipAction) return null;
+                            return (
+                                <div className="hidden lg:flex flex-wrap items-center justify-center gap-1.5 pt-1" style={{ borderTop: '1px solid var(--color-card-border)' }}>
+                                    {mortgageActions.map((action: any, idx: number) => (
+                                        <Button
+                                            key={`m-${idx}`}
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => useGameStore.getState().dispatchAction(action)}
+                                            className="text-xs text-amber-400"
+                                        >
+                                            📜 抵押 {CARGO_CN[String(action.data.cargo)] || String(action.data.cargo)} (+12💰)
+                                        </Button>
+                                    ))}
+                                    {skipAction && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => useGameStore.getState().dispatchAction(skipAction)}
+                                            className="text-xs ml-auto"
+                                        >
+                                            ⏭️ 跳过投资
+                                        </Button>
+                                    )}
+                                </div>
+                            );
+                        })()}
+                    </div>
+                );
 
             case 'SAILING':
                 if (!pendingAction) {

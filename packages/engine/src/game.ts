@@ -561,18 +561,38 @@ function buildInvestActions(s: GameState, player: PlayerState): Action[] {
         availableSlots.push({ slotId: 'navigator-small', cost: NAVIGATOR_SMALL_COST });
     }
 
-    // ── 2. 构建动作列表 ──
-    // 玩家只看到能负担的投资位 + 保险(免费) + 跳过
-    // 不自动抵押: 玩家可以手动抵押(MORTGAGE_STOCK)或选择免费选项
+    // ── 2. 破产规则: 现金不足以买最便宜的槽位, 且无可抵押股票 → 所有位免费 ──
+    const canMortgage = ALL_CARGO.some(cargo => {
+        const stock = player.stocks.find(st => st.cargo === cargo);
+        return stock && stock.quantity - stock.mortgaged > 0;
+    });
+    const minSlotCost = availableSlots.length > 0
+        ? Math.min(...availableSlots.map(s => s.cost))
+        : Infinity;
+    const isBankrupt = player.cash < minSlotCost && !canMortgage;
+
+    // ── 3. 构建动作列表 ──
     const actions: Action[] = [];
 
-    for (const slot of availableSlots) {
-        if (player.cash >= slot.cost) {
+    if (isBankrupt) {
+        // 破产: 所有位免费开放
+        for (const slot of availableSlots) {
             actions.push({
                 type: 'SELECT_INVESTMENT',
                 playerId: player.id,
-                data: { slotId: slot.slotId, cost: slot.cost },
+                data: { slotId: slot.slotId, cost: 0 },
             });
+        }
+    } else {
+        // 正常模式: 玩家只看到能负担的投资位
+        for (const slot of availableSlots) {
+            if (player.cash >= slot.cost) {
+                actions.push({
+                    type: 'SELECT_INVESTMENT',
+                    playerId: player.id,
+                    data: { slotId: slot.slotId, cost: slot.cost },
+                });
+            }
         }
     }
 
@@ -585,15 +605,17 @@ function buildInvestActions(s: GameState, player: PlayerState): Action[] {
         });
     }
 
-    // 抵押股票选项（手动抵押获得 12 现金）
-    for (const cargo of ALL_CARGO) {
-        const stock = player.stocks.find(st => st.cargo === cargo);
-        if (stock && stock.quantity - stock.mortgaged > 0) {
-            actions.push({
-                type: 'MORTGAGE_STOCK',
-                playerId: player.id,
-                data: { cargo },
-            });
+    // 抵押股票选项（手动抵押获得 12 现金）— 仅非破产时
+    if (!isBankrupt) {
+        for (const cargo of ALL_CARGO) {
+            const stock = player.stocks.find(st => st.cargo === cargo);
+            if (stock && stock.quantity - stock.mortgaged > 0) {
+                actions.push({
+                    type: 'MORTGAGE_STOCK',
+                    playerId: player.id,
+                    data: { cargo },
+                });
+            }
         }
     }
 
@@ -625,6 +647,11 @@ function handleSelectInvestment(s: GameState, action: Action): GameState {
 
     // 扣费
     player.cash -= cost;
+
+    // 破产免费投资时，清零残余现金
+    if (cost === 0 && slotId !== 'insurance') {
+        player.cash = 0;
+    }
 
     // 记录投资
     const investmentType = getInvestmentTypeFromSlot(slotId);

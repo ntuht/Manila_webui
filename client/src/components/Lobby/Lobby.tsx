@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useGameStore } from '../../stores';
 import { Button } from '../Shared';
 import { AI_STRATEGY_OPTIONS } from '../../ai';
-import type { UIGameConfig, UIAIPlayerConfig } from '../../types/uiTypes';
+import type { UIGameConfig, UIAIPlayerConfig, PlayerColor } from '../../types/uiTypes';
+import { PLAYER_COLORS, PLAYER_COLOR_CONFIG } from '../../types/uiTypes';
 
 export const Lobby: React.FC = () => {
   const { startGame } = useGameStore();
   const [playerCount, setPlayerCount] = useState<3 | 4>(3);
   const rounds = 99; // Safety cap; game ends when any stock hits 30
   const [playerName, setPlayerName] = useState('你');
+  const [playerColor, setPlayerColor] = useState<PlayerColor>('red');
   const [aiPlayers, setAiPlayers] = useState<UIAIPlayerConfig[]>([
     { name: 'AI 1', strategy: 'onnx' },
     { name: 'AI 2', strategy: 'onnx' },
@@ -43,6 +45,7 @@ export const Lobby: React.FC = () => {
       players: playerCount,
       rounds,
       aiPlayers,
+      playerColor,
     };
     startGame(config);
   };
@@ -80,10 +83,6 @@ export const Lobby: React.FC = () => {
           <p className="text-lg t-text-2 font-medium">
             ⛵ 航海商贸 · 策略桌游
           </p>
-          <p className="text-sm text-ocean-400 mt-2 flex items-center justify-center gap-1.5">
-            <span className="inline-block w-2 h-2 rounded-full bg-ocean-400 animate-pulse" />
-            搭载 ONNX 神经网络 AI 对手
-          </p>
         </div>
 
         {/* 游戏设置面板 */}
@@ -103,6 +102,43 @@ export const Lobby: React.FC = () => {
               style={{ background: 'var(--color-input-bg)', borderColor: 'var(--color-card-border)' }}
               placeholder="输入你的名字"
             />
+          </div>
+
+          {/* 玩家颜色 */}
+          <div>
+            <label className="block text-sm font-medium t-text-2 mb-2">选择颜色</label>
+            <div className="flex items-center gap-3">
+              {PLAYER_COLORS.map((c) => {
+                const cfg = PLAYER_COLOR_CONFIG[c];
+                const isSelected = c === playerColor;
+                return (
+                  <button
+                    key={c}
+                    onClick={() => setPlayerColor(c)}
+                    className="relative group transition-all duration-200"
+                    title={cfg.label}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
+                      style={{
+                        backgroundColor: cfg.fill,
+                        border: `3px solid ${isSelected ? cfg.border : 'transparent'}`,
+                        boxShadow: isSelected ? `0 0 12px ${cfg.fill}60` : undefined,
+                        transform: isSelected ? 'scale(1.15)' : undefined,
+                        opacity: isSelected ? 1 : 0.6,
+                      }}
+                    >
+                      {isSelected && (
+                        <span className="text-white text-sm font-bold drop-shadow-md">✓</span>
+                      )}
+                    </div>
+                    <span className="block text-center text-[10px] t-text-3 mt-1">
+                      {cfg.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* 玩家数量 */}
@@ -170,7 +206,7 @@ export const Lobby: React.FC = () => {
 
         {/* 底部信息 */}
         <div className="text-center text-xs t-text-3 space-y-1">
-          <p>Manila Web UI — 引擎统一 + ONNX 神经网络 AI</p>
+          <p>Manila Web UI</p>
           <p>AI 模型经过 500K+ 局自对弈训练</p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGameStore } from '../../stores';
 import { ShipTrack } from './ShipTrack';
+import { BoardLayout } from './BoardLayout';
 
 export const GameBoard: React.FC = () => {
   const { gameState } = useGameStore();
@@ -18,8 +19,11 @@ export const GameBoard: React.FC = () => {
 
   return (
     <div className="game-board">
-      {/* 船只轨道 — 核心视觉 */}
-      <div className="space-y-2">
+      {/* Desktop: Full visual board with investment slots */}
+      <BoardLayout />
+
+      {/* Mobile: Simple ship track list (BoardLayout is hidden lg:block) */}
+      <div className="lg:hidden space-y-2">
         {gameState.ships.map(ship => (
           <ShipTrack key={ship.id} ship={ship} />
         ))}

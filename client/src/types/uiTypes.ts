@@ -10,6 +10,19 @@
 export type { CargoType, InvestmentType, ActionType, Phase } from '@manila/engine';
 export type { Action, PendingAction } from '@manila/engine';
 
+// ==================== Player Colors ====================
+
+export type PlayerColor = 'red' | 'blue' | 'green' | 'orange';
+
+export const PLAYER_COLORS: PlayerColor[] = ['red', 'blue', 'green', 'orange'];
+
+export const PLAYER_COLOR_CONFIG: Record<PlayerColor, { fill: string; border: string; label: string }> = {
+    red: { fill: '#ef4444', border: '#dc2626', label: '红色' },
+    blue: { fill: '#3b82f6', border: '#2563eb', label: '蓝色' },
+    green: { fill: '#22c55e', border: '#16a34a', label: '绿色' },
+    orange: { fill: '#f97316', border: '#ea580c', label: '橙色' },
+};
+
 // ==================== UI Game Phases ====================
 
 /** UI-level phases — superset of engine phases, includes LOBBY */
@@ -35,6 +48,7 @@ export interface UIPlayerState {
     id: string;
     name: string;
     cash: number;
+    color: PlayerColor;
     stocks: UIStockHolding[];
     investments: UIInvestment[];   // per-player view (extracted from engine global investments)
     isActive: boolean;
@@ -141,6 +155,7 @@ export interface UIGameConfig {
     players: number;
     rounds: number;
     aiPlayers: UIAIPlayerConfig[];
+    playerColor?: PlayerColor;    // human player's chosen color
 }
 
 export interface UIAIPlayerConfig {

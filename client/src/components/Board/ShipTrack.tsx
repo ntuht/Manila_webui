@@ -1,8 +1,18 @@
 import React from 'react';
 import type { ShipState } from '../../types';
+import type { PlayerColor } from '../../types/uiTypes';
+import { ShipVisual } from './ShipVisual';
+import { useGameStore } from '../../stores';
 
 interface ShipTrackProps {
   ship: ShipState;
+  /** Optional invest-phase props for interactive ship seats */
+  seatInvestments?: { slotId: string; playerId: string }[];
+  playerColorMap?: Record<string, PlayerColor>;
+  selectableSlotIds?: Set<string>;
+  isInvestPhase?: boolean;
+  currentPlayerCash?: number;
+  onSeatClick?: (slotId: string, label: string, cost: number, event: React.MouseEvent) => void;
 }
 
 const CARGO_CONFIG: Record<string, { name: string; emoji: string; color: string; bg: string; ring: string; dot: string; glow: string }> = {
@@ -12,9 +22,24 @@ const CARGO_CONFIG: Record<string, { name: string; emoji: string; color: string;
   NUTMEG: { name: '肉豆蔻', emoji: '🟤', color: 'text-violet-400', bg: 'bg-violet-500/20', ring: 'ring-violet-500/40', dot: 'bg-violet-500', glow: 'rgba(139,92,246,0.4)' },
 };
 
-export const ShipTrack: React.FC<ShipTrackProps> = ({ ship }) => {
+export const ShipTrack: React.FC<ShipTrackProps> = ({
+  ship,
+  seatInvestments,
+  playerColorMap,
+  selectableSlotIds,
+  isInvestPhase,
+  currentPlayerCash,
+  onSeatClick,
+}) => {
   const positions = Array.from({ length: 14 }, (_, i) => i);
   const cfg = CARGO_CONFIG[ship.cargoType] || CARGO_CONFIG.JADE;
+  const storeColors = useGameStore.getState().playerColors;
+  const colors = playerColorMap ?? storeColors;
+
+  // Calculate total ship visual width for position alignment
+  // ShipVisual: seatCount * 36px (cell) + 12px (bow) + 4px (border)
+  const shipSeats = ({ JADE: 4, SILK: 3, GINSENG: 3, NUTMEG: 3 } as Record<string, number>)[ship.cargoType] ?? 3;
+  const totalShipWidth = shipSeats * 36 + 12 + 4;
 
   const getStatusLabel = () => {
     if (ship.isDocked) return <span className="text-emerald-400 text-[10px] font-medium">✅ 到港</span>;
@@ -130,23 +155,32 @@ export const ShipTrack: React.FC<ShipTrackProps> = ({ ship }) => {
         </div>
       </div>
 
-      {/* 船员 */}
-      {ship.crew.length > 0 && (
-        <div className="mt-1.5 pt-1.5" style={{ borderTop: '1px solid var(--color-card-border)' }}>
-          <div className="flex flex-wrap gap-1">
-            {ship.crew.map((member, index) => (
-              <span
-                key={index}
-                className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8px] t-text-2"
-                style={{ background: 'var(--color-crew-bg)', border: '1px solid var(--color-crew-border)' }}
-              >
-                <span className={`w-1 h-1 rounded-full ${cfg.dot}`} />
-                {member.playerName}
-              </span>
-            ))}
-          </div>
+      {/* 船体可视化 — 与航道位置齐平 */}
+      <div className="mt-1.5 pt-1.5 relative overflow-hidden" style={{ borderTop: '1px solid var(--color-card-border)' }}>
+        <div
+          style={{
+            // Bow aligns with the ship's current position on the track
+            // Track has 15 items (pos 0-13 + harbor) spread via justify-between
+            // Each item center is at (index / 14) * 100% of track width
+            // ShipVisual bow (right edge) should align with position dot
+            marginLeft: `calc(${(Math.min(ship.position, 14) / 14) * 100}% - ${totalShipWidth}px)`,
+            transition: 'margin-left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            display: 'inline-block',
+          }}
+        >
+          <ShipVisual
+            cargo={ship.cargoType}
+            crew={ship.crew}
+            playerColors={colors}
+            isDocked={ship.isDocked}
+            seatInvestments={seatInvestments}
+            selectableSlotIds={selectableSlotIds}
+            isInvestPhase={isInvestPhase}
+            currentPlayerCash={currentPlayerCash}
+            onSeatClick={onSeatClick}
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 };

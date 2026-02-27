@@ -2,6 +2,7 @@
 export { Button } from './Button';
 export { Card } from './Card';
 export { Modal } from './Modal';
+export { PlayerToken } from './PlayerToken';
 
 // 导出类型
 export type { ButtonProps } from './Button';

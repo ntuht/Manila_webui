@@ -4,7 +4,8 @@ import type { GameState as EngineState, Action, GameConfig as EngineConfig } fro
 import { createGame, applyAction, getValidActions } from '@manila/engine';
 import { deriveUIState } from '../adapters/engineAdapter';
 import { getStrategy } from '../ai/strategies';
-import type { UIGameState, UIPhase, UIPlayerState, UIGameConfig, UIAIPlayerConfig } from '../types/uiTypes';
+import type { UIGameState, UIPhase, UIPlayerState, UIGameConfig, UIAIPlayerConfig, PlayerColor } from '../types/uiTypes';
+import { PLAYER_COLORS } from '../types/uiTypes';
 
 // ==================== Store Interface ====================
 
@@ -18,6 +19,7 @@ interface GameStore {
   error: string | null;
   gameConfig: UIGameConfig | null;
   aiConfigs: Map<string, UIAIPlayerConfig>;
+  playerColors: Record<string, PlayerColor>;
 
   // Game control
   startGame: (config: UIGameConfig) => void;
@@ -187,6 +189,7 @@ export const useGameStore = create<GameStore>()(
       error: null,
       gameConfig: null,
       aiConfigs: new Map(),
+      playerColors: {},
 
       // ===================== Game Control =====================
 
@@ -221,6 +224,16 @@ export const useGameStore = create<GameStore>()(
 
           engineConfig.playerNames = names;
 
+          // Assign player colors
+          const playerColorMap: Record<string, PlayerColor> = {};
+          const humanColor = config.playerColor ?? 'red';
+          const availableColors = PLAYER_COLORS.filter(c => c !== humanColor);
+          // Shuffle available colors for AI
+          for (let i = availableColors.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [availableColors[i], availableColors[j]] = [availableColors[j], availableColors[i]];
+          }
+
           // Create game using engine
           let engineState = createGame(engineConfig);
 
@@ -229,7 +242,13 @@ export const useGameStore = create<GameStore>()(
             engineState.players[i].isAI = true;
           }
 
-          const uiState = deriveUIState(engineState, config);
+          // Now assign colors using actual player IDs
+          playerColorMap[engineState.players[0].id] = humanColor;
+          for (let i = 1; i < engineState.players.length; i++) {
+            playerColorMap[engineState.players[i].id] = availableColors[(i - 1) % availableColors.length];
+          }
+
+          const uiState = deriveUIState(engineState, config, 'local', playerColorMap);
 
           set({
             engineState,
@@ -238,6 +257,7 @@ export const useGameStore = create<GameStore>()(
             players: uiState.players,
             gameConfig: config,
             aiConfigs,
+            playerColors: playerColorMap,
             error: null,
           });
 
@@ -278,7 +298,7 @@ export const useGameStore = create<GameStore>()(
 
         try {
           const newEngineState = applyAction(engineState, action);
-          const uiState = deriveUIState(newEngineState, gameConfig);
+          const uiState = deriveUIState(newEngineState, gameConfig, 'local', get().playerColors);
 
           set({
             engineState: newEngineState,
