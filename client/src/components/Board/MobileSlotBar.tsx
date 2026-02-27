@@ -1,6 +1,7 @@
 /**
- * MobileSlotBar — Horizontal scrollable pill bar for non-crew investment slots.
- * Shown only on mobile (< lg). Crew slots are handled via ShipVisual seats.
+ * MobileSlotBar — Multi-row grid of investment slots for mobile.
+ * Grouped by category with color backgrounds. No horizontal scroll.
+ * Only shown on mobile (< lg) during INVEST phase.
  */
 
 import React from 'react';
@@ -23,24 +24,68 @@ interface SlotDef {
     cost: number;
 }
 
-const ALL_SLOTS: SlotDef[] = [
-    ...HARBOR_OFFICES.map(o => ({
-        slotId: o.id,
-        label: `港口${o.id.split('-')[1].toUpperCase()}`,
+interface SlotGroup {
+    title: string;
+    icon: string;
+    bgColor: string;       // background tint
+    borderColor: string;    // subtle border
+    slots: SlotDef[];
+}
+
+const SLOT_GROUPS: SlotGroup[] = [
+    {
+        title: '港口',
         icon: '🏠',
-        cost: o.cost,
-    })),
-    { slotId: 'navigator-big', label: '大领航', icon: '🧭', cost: NAVIGATOR_BIG_COST },
-    { slotId: 'navigator-small', label: '小领航', icon: '🧭', cost: NAVIGATOR_SMALL_COST },
-    { slotId: 'pirate-captain', label: '船长', icon: '☠️', cost: PIRATE_CAPTAIN_COST },
-    { slotId: 'pirate-crew', label: '船员', icon: '☠️', cost: PIRATE_CREW_COST },
-    ...SHIPYARD_OFFICES.map(o => ({
-        slotId: o.id,
-        label: `修船厂${o.id.split('-')[1].toUpperCase()}`,
+        bgColor: 'rgba(16, 185, 129, 0.06)',
+        borderColor: 'rgba(16, 185, 129, 0.15)',
+        slots: HARBOR_OFFICES.map(o => ({
+            slotId: o.id,
+            label: o.id.split('-')[1].toUpperCase(),
+            icon: '🏠',
+            cost: o.cost,
+        })),
+    },
+    {
+        title: '修船厂',
         icon: '🔧',
-        cost: o.cost,
-    })),
-    { slotId: 'insurance', label: '保险', icon: '🛡️', cost: INSURANCE_COST },
+        bgColor: 'rgba(245, 158, 11, 0.06)',
+        borderColor: 'rgba(245, 158, 11, 0.15)',
+        slots: SHIPYARD_OFFICES.map(o => ({
+            slotId: o.id,
+            label: o.id.split('-')[1].toUpperCase(),
+            icon: '🔧',
+            cost: o.cost,
+        })),
+    },
+    {
+        title: '海盗',
+        icon: '☠️',
+        bgColor: 'rgba(239, 68, 68, 0.06)',
+        borderColor: 'rgba(239, 68, 68, 0.15)',
+        slots: [
+            { slotId: 'pirate-captain', label: '船长', icon: '☠️', cost: PIRATE_CAPTAIN_COST },
+            { slotId: 'pirate-crew', label: '船员', icon: '☠️', cost: PIRATE_CREW_COST },
+        ],
+    },
+    {
+        title: '领航员',
+        icon: '🧭',
+        bgColor: 'rgba(99, 102, 241, 0.06)',
+        borderColor: 'rgba(99, 102, 241, 0.15)',
+        slots: [
+            { slotId: 'navigator-big', label: '大', icon: '🧭', cost: NAVIGATOR_BIG_COST },
+            { slotId: 'navigator-small', label: '小', icon: '🧭', cost: NAVIGATOR_SMALL_COST },
+        ],
+    },
+    {
+        title: '保险',
+        icon: '🛡️',
+        bgColor: 'rgba(14, 165, 233, 0.06)',
+        borderColor: 'rgba(14, 165, 233, 0.15)',
+        slots: [
+            { slotId: 'insurance', label: '保险', icon: '🛡️', cost: INSURANCE_COST },
+        ],
+    },
 ];
 
 interface MobileSlotBarProps {
@@ -67,66 +112,71 @@ export const MobileSlotBar: React.FC<MobileSlotBarProps> = ({
     if (!isInvestPhase) return null;
 
     return (
-        <div className="lg:hidden">
-            <div
-                className="flex items-center gap-1.5 overflow-x-auto pb-1 px-1 scrollbar-thin"
-                style={{ WebkitOverflowScrolling: 'touch' }}
-            >
-                {ALL_SLOTS.map(def => {
-                    const inv = investmentMap.get(def.slotId);
-                    const isOccupied = !!inv;
-                    const isSelectable = selectableSlotIds.has(def.slotId);
-                    const effectiveCost = slotCostMap.get(def.slotId) ?? def.cost;
-                    const isAffordable = isSelectable || currentPlayerCash >= effectiveCost;
+        <div className="lg:hidden space-y-1.5">
+            {SLOT_GROUPS.map(group => (
+                <div
+                    key={group.title}
+                    className="rounded-lg px-2 py-1.5"
+                    style={{ background: group.bgColor, border: `1px solid ${group.borderColor}` }}
+                >
+                    {/* Group header */}
+                    <div className="flex items-center gap-1 mb-1">
+                        <span className="text-[10px]">{group.icon}</span>
+                        <span className="text-[10px] t-text-3 font-medium">{group.title}</span>
+                    </div>
+                    {/* Slot pills in a flex-wrap row */}
+                    <div className="flex flex-wrap gap-1.5">
+                        {group.slots.map(def => {
+                            const inv = investmentMap.get(def.slotId);
+                            const isOccupied = !!inv;
+                            const isSelectable = selectableSlotIds.has(def.slotId);
+                            const effectiveCost = slotCostMap.get(def.slotId) ?? def.cost;
+                            const isAffordable = isSelectable || currentPlayerCash >= effectiveCost;
 
-                    return (
-                        <button
-                            key={def.slotId}
-                            className={[
-                                'flex items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] shrink-0 transition-all duration-200',
-                                isOccupied
-                                    ? 'opacity-50'
-                                    : isSelectable && isAffordable
-                                        ? 'ring-1 ring-gold-400/60 shadow-sm shadow-gold-400/20'
-                                        : '',
-                            ].join(' ')}
-                            style={{
-                                background: isOccupied
-                                    ? 'var(--color-input-bg)'
-                                    : isSelectable
-                                        ? 'rgba(251, 191, 36, 0.08)'
-                                        : 'var(--color-card-bg)',
-                                border: '1px solid var(--color-card-border)',
-                                opacity: !isOccupied && !isAffordable ? 0.3 : undefined,
-                            }}
-                            disabled={!isSelectable || isOccupied || !isAffordable}
-                            onClick={(e) => isSelectable && !isOccupied && onSlotClick(def.slotId, def.label, effectiveCost, e)}
-                        >
-                            {isOccupied ? (
-                                <>
-                                    <PlayerToken
-                                        color={playerColorMap[inv!.playerId] ?? 'red'}
-                                        size="sm"
-                                        label={playerNameMap[inv!.playerId]?.charAt(0)}
-                                    />
-                                    <span className="t-text-3">{def.label}</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span>{def.icon}</span>
-                                    <span className="t-text font-medium">{def.label}</span>
-                                    {effectiveCost > 0 && (
-                                        <span className="text-gold-400 font-bold">{effectiveCost}</span>
+                            return (
+                                <button
+                                    key={def.slotId}
+                                    className={[
+                                        'flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] transition-all duration-200',
+                                        isSelectable && !isOccupied && isAffordable
+                                            ? 'ring-1 ring-gold-400/60 shadow-sm shadow-gold-400/20'
+                                            : '',
+                                    ].join(' ')}
+                                    style={{
+                                        background: isOccupied
+                                            ? 'var(--color-input-bg)'
+                                            : 'var(--color-card-bg)',
+                                        border: '1px solid var(--color-card-border)',
+                                        opacity: isOccupied ? 0.5 : (!isAffordable ? 0.3 : 1),
+                                    }}
+                                    disabled={!isSelectable || isOccupied || !isAffordable}
+                                    onClick={(e) => isSelectable && !isOccupied && onSlotClick(def.slotId, `${group.title}${def.label}`, effectiveCost, e)}
+                                >
+                                    {isOccupied ? (
+                                        <>
+                                            <PlayerToken
+                                                color={playerColorMap[inv!.playerId] ?? 'red'}
+                                                size="sm"
+                                                label={playerNameMap[inv!.playerId]?.charAt(0)}
+                                            />
+                                            <span className="t-text-3">{def.label}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="t-text font-medium">{def.label}</span>
+                                            {effectiveCost > 0 ? (
+                                                <span className="text-gold-400 font-bold">💰{effectiveCost}</span>
+                                            ) : (
+                                                <span className="text-emerald-400 font-bold text-[10px]">免费</span>
+                                            )}
+                                        </>
                                     )}
-                                    {effectiveCost === 0 && def.slotId !== 'insurance' && (
-                                        <span className="text-emerald-400 font-bold">免费</span>
-                                    )}
-                                </>
-                            )}
-                        </button>
-                    );
-                })}
-            </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };

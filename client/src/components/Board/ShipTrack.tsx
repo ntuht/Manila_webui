@@ -155,15 +155,12 @@ export const ShipTrack: React.FC<ShipTrackProps> = ({
         </div>
       </div>
 
-      {/* 船体可视化 — 与航道位置齐平 */}
+      {/* 船体可视化 — 对齐航道但保证全船可见 */}
       <div className="mt-1.5 pt-1.5 relative overflow-hidden" style={{ borderTop: '1px solid var(--color-card-border)' }}>
         <div
           style={{
-            // Bow aligns with the ship's current position on the track
-            // Track has 15 items (pos 0-13 + harbor) spread via justify-between
-            // Each item center is at (index / 14) * 100% of track width
-            // ShipVisual bow (right edge) should align with position dot
-            marginLeft: `calc(${(Math.min(ship.position, 14) / 14) * 100}% - ${totalShipWidth}px)`,
+            // Align bow with track position, but never go negative (ship stern stays at left edge)
+            marginLeft: `max(0px, calc(${(Math.min(ship.position, 14) / 14) * 100}% - ${totalShipWidth}px))`,
             transition: 'margin-left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
             display: 'inline-block',
           }}
