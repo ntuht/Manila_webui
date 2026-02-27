@@ -1,12 +1,6 @@
-/**
- * ActionBanner — Prominent action area at the top of the center column.
- *
- * Shows phase-appropriate controls with a colored banner.
- * Human turn → shows buttons. AI turn → animated waiting.
- */
-
 import React from 'react';
 import { useGameStore } from '../../stores';
+import { useMultiplayerStore } from '../../stores/multiplayerStore';
 import { Button } from '../Shared/Button';
 import { NavigatorPanel } from './NavigatorPanel';
 
@@ -48,16 +42,41 @@ const PHASE_STYLES: Record<string, PhaseStyle> = {
 
 export const ActionBanner: React.FC = () => {
     const { currentPhase, gameState, rollDice, selectInvestment, nextPhase, getEngineState } = useGameStore();
+    const { isMultiplayer, localPlayerId } = useMultiplayerStore();
     const engineState = getEngineState();
     const pendingAction = engineState?.pendingAction;
     const pendingPlayer = engineState?.players.find(p => p.id === pendingAction?.playerId);
     const isHumanTurn = pendingPlayer && !pendingPlayer.isAI;
     const isAITurn = pendingPlayer?.isAI;
 
+    // Multiplayer: check if it's a remote human's turn (not local, not AI)
+    const isRemoteHumanTurn = isMultiplayer && isHumanTurn && pendingAction?.playerId !== localPlayerId;
+
     const style = PHASE_STYLES[currentPhase] || PHASE_STYLES.AUCTION;
 
     if (!gameState || !engineState) {
         return null;
+    }
+
+    // Remote human turn — show waiting (similar to AI waiting)
+    if (isRemoteHumanTurn && currentPhase !== 'SETTLEMENT' && currentPhase !== 'GAME_END') {
+        return (
+            <div className={`rounded-xl p-4 ${style.bg} border ${style.border} transition-colors duration-300`}>
+                <div className="flex items-center justify-center gap-3">
+                    <div className="flex gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                    <span className="text-sm t-text-2">
+                        🎮 等待 <strong>{pendingPlayer?.name}</strong> 操作...
+                    </span>
+                </div>
+                <p className="text-[10px] t-text-m text-center mt-1">
+                    {pendingAction?.message || pendingAction?.actionType}
+                </p>
+            </div>
+        );
     }
 
     // AI turn — show waiting animation

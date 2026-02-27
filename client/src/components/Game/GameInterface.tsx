@@ -12,6 +12,7 @@ import { SettlementPhase } from '../SettlementPhase';
 import { MyPlayerDashboard } from '../Player/MyPlayerDashboard';
 import { InvestmentSummary } from '../Board/InvestmentSummary';
 import { MobileInfoBar } from './MobileInfoBar';
+import { ConnectionBar } from './ConnectionBar';
 
 export const GameInterface: React.FC = () => {
   const { gameState, getEngineState } = useGameStore();
@@ -42,6 +43,9 @@ export const GameInterface: React.FC = () => {
         <div className="flex-1 min-w-0 space-y-2 w-full">
           {/* 移动端: 阶段感知信息条 */}
           <MobileInfoBar />
+
+          {/* 多人联机状态栏 */}
+          <ConnectionBar />
 
           {/* AI 港务长等待 */}
           {isAIHarborMaster && (
@@ -224,6 +228,22 @@ const GameEndResult: React.FC = () => {
   const engineState = getEngineState();
   const result = engineState?.gameResult;
 
+  const handleReturnToLobby = () => {
+    // Clean up multiplayer state if applicable
+    try {
+      const mpStore = (window as any).__multiplayerStore;
+      if (mpStore) {
+        const state = mpStore.getState();
+        if (state.isMultiplayer) {
+          state.leaveRoom();
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    endGame();
+  };
+
   if (!result) return null;
 
   const rankings = result.rankings
@@ -288,7 +308,7 @@ const GameEndResult: React.FC = () => {
 
         <div className="text-center">
           <button
-            onClick={() => endGame()}
+            onClick={() => handleReturnToLobby()}
             className="px-8 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-ocean-500 to-ocean-600 text-white hover:shadow-glow-ocean transition-all duration-200 active:scale-[0.97]"
           >
             🏠 返回大厅

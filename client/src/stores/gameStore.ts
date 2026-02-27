@@ -6,6 +6,7 @@ import { deriveUIState } from '../adapters/engineAdapter';
 import { getStrategy } from '../ai/strategies';
 import type { UIGameState, UIPhase, UIPlayerState, UIGameConfig, UIAIPlayerConfig, PlayerColor } from '../types/uiTypes';
 import { PLAYER_COLORS } from '../types/uiTypes';
+import { getNetworkManager } from '../network';
 
 // ==================== Store Interface ====================
 
@@ -52,6 +53,14 @@ interface GameStore {
   getCurrentPlayer: () => UIPlayerState | undefined;
   getGameHistory: () => any[];
   getEngineState: () => EngineState | null;
+
+  // Multiplayer
+  syncState: (engineState: EngineState) => void;
+  startMultiplayerGame: (
+    engineState: EngineState,
+    playerColors: Record<string, PlayerColor>,
+    aiConfigs: Record<string, UIAIPlayerConfig>,
+  ) => void;
 
   // Utils
   setError: (error: string | null) => void;
@@ -296,6 +305,16 @@ export const useGameStore = create<GameStore>()(
           return { success: false, error: '游戏未开始' };
         }
 
+        // Multiplayer guest: send action to host instead of executing locally
+        const mpStore = (window as any).__multiplayerStore;
+        if (mpStore) {
+          const mpState = mpStore.getState();
+          if (mpState.isMultiplayer && !mpState.isHost) {
+            mpState.sendActionToHost(action);
+            return { success: true };
+          }
+        }
+
         try {
           const newEngineState = applyAction(engineState, action);
           const uiState = deriveUIState(newEngineState, gameConfig, 'local', get().playerColors);
@@ -314,6 +333,15 @@ export const useGameStore = create<GameStore>()(
           // Auto-download replay when game ends
           if (newEngineState.phase === 'GAME_OVER') {
             autoDownloadReplay(newEngineState);
+          }
+
+          // Multiplayer host: broadcast new state to guests
+          if (mpStore) {
+            const mpState = mpStore.getState();
+            if (mpState.isMultiplayer && mpState.isHost) {
+              const nm = getNetworkManager();
+              nm.broadcastState(newEngineState);
+            }
           }
 
           // Check if next pendingAction belongs to an AI player
@@ -499,6 +527,57 @@ export const useGameStore = create<GameStore>()(
       },
 
       getEngineState: () => get().engineState,
+
+      // ===================== Multiplayer =====================
+
+      /** Guest: receive and apply host's authoritative state */
+      syncState: (engineState: EngineState) => {
+        const { gameConfig } = get();
+        if (!gameConfig) return;
+
+        const uiState = deriveUIState(engineState, gameConfig, 'multi', get().playerColors);
+        set({
+          engineState,
+          gameState: uiState,
+          currentPhase: uiState.phase,
+          players: uiState.players,
+          error: null,
+        });
+      },
+
+      /** Host: start a multiplayer game with pre-created engine state */
+      startMultiplayerGame: (
+        engineState: EngineState,
+        playerColors: Record<string, PlayerColor>,
+        aiConfigs: Record<string, UIAIPlayerConfig>,
+      ) => {
+        const config: UIGameConfig = {
+          players: engineState.config.playerCount,
+          rounds: engineState.config.rounds,
+          aiPlayers: Object.values(aiConfigs),
+        };
+
+        const aiConfigMap = new Map<string, UIAIPlayerConfig>();
+        for (const [k, v] of Object.entries(aiConfigs)) {
+          aiConfigMap.set(k, v);
+        }
+
+        const uiState = deriveUIState(engineState, config, 'multi', playerColors);
+
+        set({
+          engineState,
+          gameState: uiState,
+          currentPhase: uiState.phase,
+          players: uiState.players,
+          gameConfig: config,
+          aiConfigs: aiConfigMap,
+          playerColors,
+          error: null,
+        });
+
+        // Schedule AI turn if needed (host only)
+        scheduleAITurn();
+      },
 
       // ===================== Utils =====================
 
