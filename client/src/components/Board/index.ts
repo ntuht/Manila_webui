@@ -9,3 +9,4 @@ export { SlotToken } from './SlotToken';
 export { CrewSlotRow } from './CrewSlotRow';
 export { InvestConfirmPopover } from './InvestConfirmPopover';
 export { ShipVisual } from './ShipVisual';
+export { MobileSlotBar } from './MobileSlotBar';
